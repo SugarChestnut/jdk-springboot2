@@ -1,0 +1,50 @@
+server:
+    port: 30001
+
+spring:
+    application:
+        name: server
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://47.98.104.98:3306/admin_tdesign?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: root
+        password: jxZ03121994!
+        type: com.alibaba.druid.pool.DruidDataSource
+        druid:
+            initial-size: 10
+            max-active: 30
+            min-idle: 10
+            max-wait: 30000
+            validation-query: "SELECT 1"
+            time-between-eviction-runs-millis: 2000
+            test-while-idle: true
+            test-on-borrow: false
+            test-on-return: false
+            pool-prepared-statements: true
+            max-open-prepared-statements: 20
+    servlet:
+        multipart:
+            max-file-size: 10MB
+            max-request-size: 10MB
+
+mybatis-plus:
+    mapper-locations: classpath*:mapper/**/*Mapper.xml
+    type-aliases-package: cn.rtt.server.system.domain.entity
+    configuration:
+        map-underscore-to-camel-case: true
+        call-setters-on-nulls: true
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+    level:
+        root: info
+
+system:
+    config:
+        token:
+            secret: BIrAQfMb1dqS4yCmYJm0ssdw+mn9Ipb3usR6iDnD86eeH5krUTgzxpzFwYd56uxe7vQPEsRUi2V3MYuTpBH45g==
+            header: Authorization
+            expireTime: 60
+        login:
+            maxRetryCount: 5
+            lockTime: 300

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <property name="APP_NAME" value="server"/>
+    <property name="LOG_HOME" value="./logs"/>
+    <property name="DATE_FORMAT" value="%d{yyyy-MM,aux}"/>
+
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+<!--    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+
+<!--        <encoder>-->
+<!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            <fileNamePattern>${LOG_HOME}/${DATE_FORMAT}/${APP_NAME}-info.%d.log</fileNamePattern>-->
+<!--            <MaxHistory>60</MaxHistory>-->
+<!--        </rollingPolicy>-->
+
+<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+<!--            <level>INFO</level>-->
+<!--            <onMatch>ACCEPT</onMatch>-->
+<!--            <onMismatch>DENY</onMismatch>-->
+<!--        </filter>-->
+
+<!--    </appender>-->
+
+<!--    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+
+<!--        <encoder>-->
+<!--            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>-->
+<!--        </encoder>-->
+
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            <fileNamePattern>${LOG_HOME}/${DATE_FORMAT}/${APP_NAME}-error.%d.log</fileNamePattern>-->
+<!--            <MaxHistory>60</MaxHistory>-->
+<!--        </rollingPolicy>-->
+
+<!--        <filter class="ch.qos.logback.classic.filter.LevelFilter">-->
+<!--            <level>ERROR</level>-->
+<!--            <onMatch>ACCEPT</onMatch>-->
+<!--            <onMismatch>DENY</onMismatch>-->
+<!--        </filter>-->
+
+<!--    </appender>-->
+
+    <root level="info">
+        <appender-ref ref="consoleLog"/>
+<!--        <appender-ref ref="fileInfoLog"/>-->
+<!--        <appender-ref ref="fileErrorLog"/>-->
+    </root>
+
+</configuration>
