@@ -77,7 +77,7 @@ public class SysLoginService {
      * @param code 验证码
      * @param uuid 唯一标识
      */
-    public void validateCaptcha(String code, String uuid) {
+    private void validateCaptcha(String code, String uuid) {
 
         Object value = cacheService.get(CacheConstants.CAPTCHA_CODE_KEY + uuid);
         if (value == null || !Strings.CS.equals((String) value, code)) {
@@ -87,11 +87,8 @@ public class SysLoginService {
 
     /**
      * 登录前置校验
-     *
-     * @param username 用户名
-     * @param password 用户密码
      */
-    public void loginPreCheck(String username, String password) {
+    private void loginPreCheck(String username, String password) {
         // 用户名或密码为空 错误
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             throw new SystemException(ResultCode.LOGIN_ERROR);

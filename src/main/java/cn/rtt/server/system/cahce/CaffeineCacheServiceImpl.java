@@ -68,6 +68,7 @@ public class CaffeineCacheServiceImpl implements CacheService {
     public void invalid(String key) {
         if (redirectCache.containsKey(key)) {
             redirectCache.get(key).invalidate(key);
+            redirectCache.remove(key);
         }
     }
 

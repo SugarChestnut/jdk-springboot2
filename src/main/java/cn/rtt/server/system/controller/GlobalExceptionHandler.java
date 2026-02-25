@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ControllerAdvice
 @Slf4j
 @ResponseBody
-public class BaseExceptionHandler {
+public class GlobalExceptionHandler {
 
     @ExceptionHandler(SystemException.class)
     public Result<?> systemException(SystemException e) {
@@ -31,7 +31,6 @@ public class BaseExceptionHandler {
     public Result<?> missingServletRequestParameterException(Exception e) {
         return Result.error(ResultCode.PARAM_ERROR);
     }
-
 
     @ExceptionHandler(Exception.class)
     public Result<?> exception(Exception e) throws Exception {

@@ -8,7 +8,6 @@ import cn.rtt.server.system.domain.entity.SysUser;
 import cn.rtt.server.system.exception.SystemException;
 import cn.rtt.server.system.service.SysUserService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @AllArgsConstructor
-@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final SysPasswordService passwordService;

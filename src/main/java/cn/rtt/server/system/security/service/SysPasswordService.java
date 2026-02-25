@@ -58,7 +58,7 @@ public class SysPasswordService {
             clearLoginRecordCache(username);
         } else {
             retryCount = retryCount + 1;
-            cacheService.put(getCacheKey(username), retryCount);
+            cacheService.expire(getCacheKey(username), retryCount, 300);
             throw new SystemException(ResultCode.LOGIN_ERROR);
         }
     }
