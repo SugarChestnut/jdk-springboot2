@@ -27,23 +27,19 @@ public enum RoleEnum {
     }
 
     public static boolean isAdmin(List<SysRole> roles) {
-        if (roles == null || roles.isEmpty()) {
-            return false;
-        }
-        for (SysRole role : roles) {
-            if (ADMIN_ROLE.key.equals(role.getRoleKey())) {
-                return true;
-            }
-        }
-        return false;
+       return hasRole(roles, ADMIN_ROLE);
     }
 
     public static boolean isSuperAdmin(List<SysRole> roles) {
+        return hasRole(roles, SUPER_ADMIN);
+    }
+
+    private static boolean hasRole(List<SysRole> roles, RoleEnum roleEnum) {
         if (roles == null || roles.isEmpty()) {
             return false;
         }
         for (SysRole role : roles) {
-            if (SUPER_ADMIN.key.equals(role.getRoleKey())) {
+            if (roleEnum.key.equals(role.getRoleKey())) {
                 return true;
             }
         }

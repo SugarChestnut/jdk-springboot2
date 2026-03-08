@@ -27,11 +27,8 @@ public class PermissionService {
      * @return 用户是否具备某权限
      */
     public boolean hasPermission(String permission) {
-        if (SecurityUtils.isAdmin()) {
+        if (SecurityUtils.isSupAdmin()) {
             return true;
-        }
-        if (StringUtils.isEmpty(permission)) {
-            return false;
         }
         LoginUser loginUser = SecurityUtils.getLoginUser();
         if (loginUser == null || CollectionUtils.isEmpty(loginUser.getPermissions())) {

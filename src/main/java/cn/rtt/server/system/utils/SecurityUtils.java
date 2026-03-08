@@ -91,6 +91,14 @@ public class SecurityUtils {
         List<SysRole> roles = user.getRoles();
         return RoleEnum.isAdmin(roles);
     }
+    /**
+     * 是否为超级管理员
+     */
+    public static boolean isSupAdmin() {
+        SysUser user = getLoginUser().getUser();
+        List<SysRole> roles = user.getRoles();
+        return RoleEnum.isSuperAdmin(roles);
+    }
 
     /**
      * 验证用户是否具备某权限
