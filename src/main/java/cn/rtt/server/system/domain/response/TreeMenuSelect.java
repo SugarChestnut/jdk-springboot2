@@ -40,11 +40,11 @@ public class TreeMenuSelect implements Serializable {
     public TreeMenuSelect(SysMenu menu) {
         this.children = menu.getChildren().stream().map(TreeMenuSelect::new).collect(Collectors.toList());
         this.sysMenu = menu;
-        this.label = menu.getMenuName();
+        this.label = menu.getTitle();
         this.menuId = menu.getMenuId();
-        meta.put("title", menu.getMenuName());
+        meta.put("title", menu.getTitle());
         meta.put("icon", menu.getIcon());
-        meta.put("isIframe", menu.getIsFrame() == 0);
+        meta.put("isIframe", menu.getIsFrame());
         meta.put("isLink", "");
         meta.put("role", List.of("admin", "nor_user", "common"));
     }

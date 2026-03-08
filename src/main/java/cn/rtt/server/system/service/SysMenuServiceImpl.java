@@ -100,7 +100,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     @Override
     public boolean checkMenuNameUnique(SysMenu menu) {
         long menuId = menu.getMenuId() == null ? -1L : menu.getMenuId();
-        SysMenu info = menuRepository.getBaseMapper().checkMenuNameUnique(menu.getMenuName(), menu.getParentId());
+        SysMenu info = menuRepository.getBaseMapper().checkMenuNameUnique(menu.getTitle(), menu.getParentId());
         if (info != null && info.getMenuId() != menuId) {
             return UserConstants.NOT_UNIQUE;
         }
@@ -119,9 +119,8 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public void createMenu(SysMenu menu) {
-        if (StringUtils.isEmpty(menu.getMenuName())) throw new SystemException("菜单名称不能为空");
         LambdaQueryWrapper<SysMenu> w1 = new LambdaQueryWrapper<>();
-        w1.eq(SysMenu::getMenuName, menu.getMenuName());
+        w1.eq(SysMenu::getTitle, menu.getTitle());
         w1.eq(SysMenu::getParentId, menu.getParentId());
         if (menuRepository.count(w1) > 0) throw new SystemException("菜单名称已存在");
         // 外链菜单必须是 https

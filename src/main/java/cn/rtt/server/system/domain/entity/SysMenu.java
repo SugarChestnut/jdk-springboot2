@@ -1,24 +1,18 @@
 package cn.rtt.server.system.domain.entity;
 
+import com.alibaba.druid.sql.visitor.functions.Char;
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <p>
- * 菜单权限表
- * </p>
- *
- * @author xql
- * @since 2024-11-13
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
@@ -28,18 +22,24 @@ public class SysMenu extends BaseEntity {
 
     @TableId(value = "menu_id", type = IdType.AUTO)
     private Long menuId;
-    private String menuName;
+
+    @NotEmpty(message = "菜单标题不能为空")
+    private String title;
+
     private Long parentId;
     private Integer orderNum;
     private String path;
     private String component;
     private String query;
+
+    @NotEmpty(message = "路由名称不能为空")
     private String routeName;
-    private Integer isFrame;
-    private Integer isCache;
+
+    private Boolean isFrame;
+    private Boolean isCache;
     private String menuType;
-    private String visible;
-    private String status;
+    private Boolean hidden;
+    private Boolean status;
     private String permission;
     private String icon;
 

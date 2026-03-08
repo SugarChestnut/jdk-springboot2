@@ -103,11 +103,11 @@ public class SysMenuController {
     @PostMapping("edit")
     public Result edit(@Validated @RequestBody SysMenu menu) {
         if (!menuService.checkMenuNameUnique(menu)) {
-            return Result.error("修改菜单'" + menu.getMenuName() + "'失败，菜单名称已存在");
-        } else if (UserConstants.YES_FRAME == menu.getIsFrame() && !StringProUtils.isHttp(menu.getPath())) {
-            return Result.error("修改菜单'" + menu.getMenuName() + "'失败，地址必须以http(s)://开头");
+            return Result.error("修改菜单'" + menu.getTitle() + "'失败，菜单名称已存在");
+        } else if (menu.getIsFrame() && !StringProUtils.isHttp(menu.getPath())) {
+            return Result.error("修改菜单'" + menu.getTitle() + "'失败，地址必须以http(s)://开头");
         } else if (menu.getMenuId().equals(menu.getParentId())) {
-            return Result.error("修改菜单'" + menu.getMenuName() + "'失败，上级菜单不能选择自己");
+            return Result.error("修改菜单'" + menu.getTitle() + "'失败，上级菜单不能选择自己");
         }
         menuService.updateMenu(menu);
         return Result.success();
