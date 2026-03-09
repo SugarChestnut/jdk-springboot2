@@ -3,6 +3,7 @@ package cn.rtt.server.system.security.service;
 
 import cn.rtt.server.system.cahce.CacheService;
 import cn.rtt.server.system.constant.CacheConstants;
+import cn.rtt.server.system.constant.Permission;
 import cn.rtt.server.system.constant.ResultCode;
 import cn.rtt.server.system.constant.RoleEnum;
 import cn.rtt.server.system.domain.LoginUser;
@@ -13,6 +14,7 @@ import cn.rtt.server.system.security.context.AuthenticationContextHolder;
 import cn.rtt.server.system.service.SysMenuService;
 import cn.rtt.server.system.service.SysUserService;
 import cn.rtt.server.system.utils.IpUtils;
+import cn.rtt.server.system.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +23,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 /**
  * 登录
@@ -63,7 +67,9 @@ public class SysLoginService {
             AuthenticationContextHolder.clearContext();
         }
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        loginUser.setPermissions(menuService.getPermission(loginUser.getUserId()));
+        Set<String> permission = menuService.getPermission(loginUser.getUserId());
+        if (loginUser.getSuperAdmin()) permission.add(Permission.SUPER_ADMIN);
+        loginUser.setPermissions(permission);
         loginUser.setSuperAdmin(RoleEnum.isSuperAdmin(loginUser.getUser().getRoles()));
         loginUser.setAdmin(RoleEnum.isAdmin(loginUser.getUser().getRoles()));
         recordLoginInfo(loginUser.getUserId());

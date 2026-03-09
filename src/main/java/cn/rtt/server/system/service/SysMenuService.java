@@ -1,6 +1,7 @@
 package cn.rtt.server.system.service;
 
 
+import cn.rtt.server.system.domain.request.menu.MenuSearchRequest;
 import cn.rtt.server.system.domain.response.TreeMenuSelect;
 import cn.rtt.server.system.domain.entity.SysMenu;
 
@@ -16,11 +17,18 @@ import java.util.Set;
  * @since 2024-07-18
  */
 public interface SysMenuService {
-
+    /**
+     * 获取路由树
+     */
+    List<SysMenu> getRouteTree();
+    /**
+     * 获取菜单树
+     */
+    List<SysMenu> getMenuTree(MenuSearchRequest request);
+    /**
+     *获取用户权限标识
+     */
     Set<String> getPermission(Long userId);
-
-    List<SysMenu> getTree();
-
     /**
      * 根据角色ID查询权限
      *

@@ -15,7 +15,7 @@
         <result property="menuType" column="menu_type"/>
         <result property="hidden" column="hidden"/>
         <result property="status" column="status"/>
-        <result property="permission" column="perms"/>
+        <result property="permission" column="permission"/>
         <result property="icon" column="icon"/>
         <result property="gmtCreate" column="gmt_create"/>
         <result property="gmtModified" column="gmt_modified"/>
@@ -26,22 +26,37 @@
         from sys_menu
     </sql>
 
-    <select id="getSuperAdminRoute" resultMap="SysMenuResult">
+    <select id="getSuperAdminMenu" resultMap="SysMenuResult">
         select m.*
         from sys_menu m
-        where m.status = 0
+        <where>
+            m.status = 0
+            <if test="request.menuType != null and request.menuType != ''">
+                and m.menu_type != #{request.menuType}
+            </if>
+            <if test="request.title != null and request.title != ''">
+                and m.title != #{request.title}
+            </if>
+        </where>
         order by m.parent_id, m.order_num
     </select>
 
-    <select id="getRouteByUserId" resultMap="SysMenuResult" parameterType="java.lang.Long">
+    <select id="getUserMenu" resultMap="SysMenuResult">
         select distinct m.*
         from sys_menu m
-                 left join sys_role_menu rm on m.menu_id = rm.menu_id
-                 left join sys_user_role ur on rm.role_id = ur.role_id
-                 left join sys_role ro on rm.role_id = ro.role_id
-        where ur.user_id = #{userId}
-          and m.status = 0
-          AND ro.status = 0
+        left join sys_role_menu rm on m.menu_id = rm.menu_id
+        left join sys_user_role ur on rm.role_id = ur.role_id
+        left join sys_role ro on rm.role_id = ro.role_id
+        where
+        ur.user_id = #{request.userId}
+        and m.status = 0
+        and ro.status = 0
+        <if test="request.menuType != null and request.menuType != ''">
+            and m.menu_type != #{request.menuType}
+        </if>
+        <if test="request.title != null and request.title != ''">
+            and m.title != #{request.title}
+        </if>
         order by m.parent_id, m.order_num
     </select>
 

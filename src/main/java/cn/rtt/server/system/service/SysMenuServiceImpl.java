@@ -1,16 +1,20 @@
 package cn.rtt.server.system.service;
 
+import cn.rtt.server.system.constant.MenuType;
 import cn.rtt.server.system.constant.RoleEnum;
 import cn.rtt.server.system.constant.UserConstants;
 import cn.rtt.server.system.dao.SysMenuRepository;
 import cn.rtt.server.system.dao.SysRoleMenuRepository;
 import cn.rtt.server.system.domain.LoginUser;
+import cn.rtt.server.system.domain.request.menu.MenuSearchRequest;
+import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.domain.response.TreeMenuSelect;
 import cn.rtt.server.system.domain.entity.SysMenu;
 import cn.rtt.server.system.domain.entity.SysRoleMenu;
 import cn.rtt.server.system.exception.SystemException;
 import cn.rtt.server.system.utils.CollectionUtils;
 import cn.rtt.server.system.utils.SecurityUtils;
+import cn.rtt.server.system.utils.StringProUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,57 +37,42 @@ public class SysMenuServiceImpl implements SysMenuService {
     private final SysRoleMenuRepository roleMenuRepository;
 
     @Override
+    public List<SysMenu> getRouteTree() {
+        MenuSearchRequest request = new MenuSearchRequest();
+        request.setMenuType(MenuType.BUTTON.getType());
+        List<SysMenu> menus = getMenus(request);
+        List<SysMenu> collect = menus.stream()
+                .filter(m -> !Objects.equals(m.getMenuType(), MenuType.BUTTON.getType()))
+                .collect(Collectors.toList());
+        return buildMenuTree(collect);
+    }
+
+    @Override
+    public List<SysMenu> getMenuTree(MenuSearchRequest request) {
+        List<SysMenu> menus = getMenus(request);
+        return buildMenuTree(menus);
+    }
+
+    private List<SysMenu> getMenus(MenuSearchRequest request) {
+        List<SysMenu> menus;
+        if (SecurityUtils.getLoginUser().getSuperAdmin()) {
+            menus = menuRepository.getBaseMapper().getSuperAdminMenu(request);
+        } else {
+            request.setUserId(SecurityUtils.getLoginUser().getUserId());
+            menus = menuRepository.getBaseMapper().getUserMenu(request);
+        }
+        return menus;
+    }
+
+    @Override
     public Set<String> getPermission(Long userId) {
         List<String> permissionList = menuRepository.getBaseMapper().selectPermissionByUserId(userId);
         return permissionList.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toSet());
     }
 
     @Override
-    public List<SysMenu> getTree() {
-        List<SysMenu> menus;
-        if (SecurityUtils.getLoginUser().getSuperAdmin()) {
-            menus = menuRepository.getBaseMapper().getSuperAdminRoute();
-        } else {
-            menus = menuRepository.getBaseMapper().getRouteByUserId(SecurityUtils.getLoginUser().getUserId());
-        }
-        return buildMenuTree(menus);
-    }
-
-    @Override
-    public Set<String> selectMenuPermsByRoleId(Long roleId) {
-        return null;
-    }
-
-    @Override
-    public Set<String> selectMenuPermsByUserId(Long userId) {
-        return null;
-    }
-
-    @Override
-    public List<SysMenu> selectMenuList(SysMenu menu, Long userId) {
-        List<SysMenu> menuList;
-        // 管理员显示所有菜单信息
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        if (RoleEnum.isAdmin(loginUser.getUser().getRoles())) {
-            menuList = menuRepository.getBaseMapper().selectMenuList(menu);
-        } else {
-            menu.getParams().put("userId", userId);
-            menuList = menuRepository.getBaseMapper().selectMenuListByUserId(menu);
-        }
-        if (menu.getNotNextAllNodeId() != null && CollectionUtils.isNotEmpty(menuList)) {
-            menuList = menuList.stream().filter(m -> m.getMenuId().intValue() != menu.getNotNextAllNodeId()).collect(Collectors.toList());
-        }
-        return menuList;
-    }
-
-    @Override
     public List<SysMenu> selectMenuList(Long userId) {
         return selectMenuList(new SysMenu(), userId);
-    }
-
-    @Override
-    public SysMenu selectMenuById(Long menuId) {
-        return menuRepository.getById(menuId);
     }
 
     @Override
@@ -98,31 +87,9 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public boolean checkMenuNameUnique(SysMenu menu) {
-        long menuId = menu.getMenuId() == null ? -1L : menu.getMenuId();
-        SysMenu info = menuRepository.getBaseMapper().checkMenuNameUnique(menu.getTitle(), menu.getParentId());
-        if (info != null && info.getMenuId() != menuId) {
-            return UserConstants.NOT_UNIQUE;
-        }
-        return UserConstants.UNIQUE;
-    }
-
-    @Override
-    public boolean hasChildByMenuId(Long menuId) {
-        return false;
-    }
-
-    @Override
-    public boolean checkMenuExistRole(Long menuId) {
-        return roleMenuRepository.getBaseMapper().checkMenuExistRole(menuId) > 0;
-    }
-
-    @Override
     public void createMenu(SysMenu menu) {
-        LambdaQueryWrapper<SysMenu> w1 = new LambdaQueryWrapper<>();
-        w1.eq(SysMenu::getTitle, menu.getTitle());
-        w1.eq(SysMenu::getParentId, menu.getParentId());
-        if (menuRepository.count(w1) > 0) throw new SystemException("菜单名称已存在");
+        checkMenu(menu);
+
         // 外链菜单必须是 https
         //
 
@@ -130,8 +97,28 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public void updateMenu(SysMenu sysMenu) {
-        menuRepository.updateById(sysMenu);
+    public void updateMenu(SysMenu menu) {
+        checkMenu(menu);
+        menuRepository.updateById(menu);
+    }
+
+    private void checkMenu(SysMenu menu) {
+        LambdaQueryWrapper<SysMenu> w1 = new LambdaQueryWrapper<>();
+        w1.eq(SysMenu::getTitle, menu.getTitle());
+        w1.eq(menu.getParentId() != null, SysMenu::getParentId, menu.getParentId());
+        if (menu.getMenuId() != null) {
+            List<SysMenu> list = menuRepository.list(w1);
+            for (SysMenu sysMenu : list) {
+                if (!Objects.equals(sysMenu.getMenuId(), menu.getMenuId())) throw new SystemException("菜单名称已存在");
+            }
+        } else {
+            if (menuRepository.count(w1) > 0) throw new SystemException("菜单名称已存在");
+        }
+        if (menu.getParentId() != null) {
+            SysMenu parentMenu = menuRepository.getById(menu.getParentId());
+            if (parentMenu == null) throw new SystemException("父菜单不存在");
+            if (Objects.equals(menu.getParentId(), menu.getMenuId())) throw new SystemException("上级菜单不能选择自己");
+        }
     }
 
     @Override
@@ -147,10 +134,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     /**
-     * 构建前端所需要树结构
-     *
-     * @param menus 菜单列表
-     * @return 树结构列表
+     * 构建菜单树
      */
     private List<SysMenu> buildMenuTree(List<SysMenu> menus) {
         List<SysMenu> topMenu = menus.stream()
@@ -163,13 +147,6 @@ public class SysMenuServiceImpl implements SysMenuService {
         return topMenu;
     }
 
-    /**
-     * 根据父节点的ID获取所有子节点
-     *
-     * @param list     分类表
-     * @param parentId 传入的父节点ID
-     * @return String
-     */
     private List<SysMenu> buildChildMenu(List<SysMenu> list, long parentId) {
         List<SysMenu> childList = list.stream().filter(menu -> menu.getParentId() == parentId).collect(Collectors.toList());
         for (SysMenu menu : childList) {

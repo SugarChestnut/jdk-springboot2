@@ -6,7 +6,7 @@ import cn.rtt.server.system.constant.ResultCode;
  * @author rtt
  * @date 2025/12/31 10:03
  */
-public class OperationException extends  Exception{
+public class OperationException extends  RuntimeException{
 
     private static final long serialVersionUID = -4879677283847539655L;
 

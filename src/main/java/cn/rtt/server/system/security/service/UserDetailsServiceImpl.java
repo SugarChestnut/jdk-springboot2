@@ -2,6 +2,7 @@ package cn.rtt.server.system.security.service;
 
 
 import cn.rtt.server.system.constant.ResultCode;
+import cn.rtt.server.system.constant.RoleEnum;
 import cn.rtt.server.system.constant.UserStatus;
 import cn.rtt.server.system.domain.LoginUser;
 import cn.rtt.server.system.domain.entity.SysUser;
@@ -40,6 +41,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.getUserId());
         loginUser.setUser(user);
+        loginUser.setAdmin(RoleEnum.isAdmin(user.getRoles()));
+        loginUser.setSuperAdmin(RoleEnum.isSuperAdmin(user.getRoles()));
         return loginUser;
     }
 }

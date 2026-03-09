@@ -9,13 +9,13 @@ import lombok.Getter;
 @Getter
 public enum MenuType {
 
-    CATALOGUE('M'),
-    MENU('C'),
-    BUTTON('F');
+    CATALOGUE("M"),
+    MENU("C"),
+    BUTTON("F");
 
-    final char type;
+    final String type;
 
-    MenuType(char type) {
+    MenuType(String type) {
         this.type = type;
     }
 }

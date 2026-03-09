@@ -1,7 +1,7 @@
 package cn.rtt.server.system.controller;
 
 
-import cn.rtt.server.system.constant.UserConstants;
+import cn.rtt.server.system.domain.request.menu.MenuSearchRequest;
 import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.domain.response.TreeMenuSelect;
 import cn.rtt.server.system.domain.entity.SysMenu;
@@ -9,7 +9,6 @@ import cn.rtt.server.system.service.SysMenuService;
 import cn.rtt.server.system.utils.SecurityUtils;
 import cn.rtt.server.system.utils.StringProUtils;
 import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.Strings;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +28,19 @@ public class SysMenuController {
     private final SysMenuService menuService;
 
     /**
-     * 获取当前登录用户菜单路由信息
+     * 获取当前登录用户路由信息
      */
-    @GetMapping("tree")
-    public Result<List<SysMenu>> tree() {
-        return Result.success(menuService.getTree());
+    @RequestMapping("/route")
+    public Result<List<SysMenu>> route() {
+        return Result.success(menuService.getRouteTree());
+    }
+
+    /**
+     * 获取当前登录用户菜单信息
+     */
+    @RequestMapping("/tree")
+    public Result<List<SysMenu>> tree(@RequestBody MenuSearchRequest request) {
+        return Result.success(menuService.getMenuTree(request));
     }
 
     /**
@@ -54,15 +61,6 @@ public class SysMenuController {
     public Result listAll(SysMenu menu) {
         List<SysMenu> menus = menuService.selectMenuList(menu, null);
         return Result.success(menus);
-    }
-
-    /**
-     * 根据菜单编号获取详细信息
-     */
-    @PreAuthorize("@ss.hasPermission('system:menu:query')")
-    @GetMapping(value = "/{menuId}")
-    public Result getInfo(@PathVariable Long menuId) {
-        return Result.success(menuService.selectMenuById(menuId));
     }
 
     /**
@@ -101,14 +99,7 @@ public class SysMenuController {
      */
     @PreAuthorize("@ss.hasPermission('system:menu:edit')")
     @PostMapping("edit")
-    public Result edit(@Validated @RequestBody SysMenu menu) {
-        if (!menuService.checkMenuNameUnique(menu)) {
-            return Result.error("修改菜单'" + menu.getTitle() + "'失败，菜单名称已存在");
-        } else if (menu.getIsFrame() && !StringProUtils.isHttp(menu.getPath())) {
-            return Result.error("修改菜单'" + menu.getTitle() + "'失败，地址必须以http(s)://开头");
-        } else if (menu.getMenuId().equals(menu.getParentId())) {
-            return Result.error("修改菜单'" + menu.getTitle() + "'失败，上级菜单不能选择自己");
-        }
+    public Result<?> edit(@Validated @RequestBody SysMenu menu) {
         menuService.updateMenu(menu);
         return Result.success();
     }

@@ -1,6 +1,7 @@
 package cn.rtt.server.system.mapper;
 
 import cn.rtt.server.system.domain.entity.SysMenu;
+import cn.rtt.server.system.domain.request.menu.MenuSearchRequest;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,13 +19,14 @@ import java.util.List;
 @Mapper
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 
-    List<SysMenu> getSuperAdminRoute();
-
     /**
-     * 根据用户ID查询菜单
+     * 获取超级管理员的路由
      */
-    List<SysMenu> getRouteByUserId(Long userId);
-
+    List<SysMenu> getSuperAdminMenu(@Param("request") MenuSearchRequest request);
+    /**
+     * 根据用户ID查询路由
+     */
+    List<SysMenu> getUserMenu(@Param("request") MenuSearchRequest request);
     /**
      * 根据角色ID查询权限
      *
