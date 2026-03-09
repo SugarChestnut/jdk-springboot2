@@ -71,17 +71,6 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public List<SysMenu> selectMenuList(Long userId) {
-        return selectMenuList(new SysMenu(), userId);
-    }
-
-    @Override
-    public List<TreeMenuSelect> buildMenuTreeSelect(List<SysMenu> menus) {
-        List<SysMenu> menuTrees = buildMenuTree(menus);
-        return menuTrees.stream().map(TreeMenuSelect::new).collect(Collectors.toList());
-    }
-
-    @Override
     public List<Long> selectMenuListByRoleId(Long roleId) {
         return menuRepository.getBaseMapper().selectMenuListByRoleId(roleId, false);
     }

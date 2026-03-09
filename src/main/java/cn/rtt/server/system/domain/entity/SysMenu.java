@@ -31,10 +31,7 @@ public class SysMenu extends BaseEntity {
     private String path;
     private String component;
     private String query;
-
-    @NotEmpty(message = "路由名称不能为空")
     private String routeName;
-
     private Boolean isFrame;
     private Boolean isCache;
     private String menuType;

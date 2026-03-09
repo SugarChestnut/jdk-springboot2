@@ -35,7 +35,7 @@
                 and m.menu_type != #{request.menuType}
             </if>
             <if test="request.title != null and request.title != ''">
-                and m.title != #{request.title}
+                and m.title = #{request.title}
             </if>
         </where>
         order by m.parent_id, m.order_num

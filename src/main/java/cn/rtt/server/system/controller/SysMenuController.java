@@ -3,19 +3,14 @@ package cn.rtt.server.system.controller;
 
 import cn.rtt.server.system.domain.request.menu.MenuSearchRequest;
 import cn.rtt.server.system.domain.response.Result;
-import cn.rtt.server.system.domain.response.TreeMenuSelect;
 import cn.rtt.server.system.domain.entity.SysMenu;
 import cn.rtt.server.system.service.SysMenuService;
-import cn.rtt.server.system.utils.SecurityUtils;
-import cn.rtt.server.system.utils.StringProUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 菜单信息
@@ -41,47 +36,6 @@ public class SysMenuController {
     @RequestMapping("/tree")
     public Result<List<SysMenu>> tree(@RequestBody MenuSearchRequest request) {
         return Result.success(menuService.getMenuTree(request));
-    }
-
-    /**
-     * 获取菜单列表
-     */
-    @PreAuthorize("@ss.hasPermission('system:menu:list')")
-    @GetMapping("/list")
-    public Result list(SysMenu menu) {
-        List<SysMenu> menus = menuService.selectMenuList(menu, SecurityUtils.getUserId());
-        return Result.success(menus);
-    }
-
-    /**
-     * 获取菜单列表
-     */
-    @PreAuthorize("@ss.hasPermission('system:menu:list')")
-    @GetMapping("/listAll")
-    public Result listAll(SysMenu menu) {
-        List<SysMenu> menus = menuService.selectMenuList(menu, null);
-        return Result.success(menus);
-    }
-
-    /**
-     * 获取菜单下拉树列表
-     */
-    @GetMapping("/treeselect")
-    public Result<List<TreeMenuSelect>> treeselect(SysMenu menu) {
-        List<SysMenu> menus = menuService.selectMenuList(menu, SecurityUtils.getUserId());
-        return Result.success(menuService.buildMenuTreeSelect(menus));
-    }
-
-    /**
-     * 加载对应角色菜单列表树
-     */
-    @GetMapping(value = "/roleMenuTreeselect/{roleId}")
-    public Result roleMenuTreeSelect(@PathVariable("roleId") Long roleId) {
-        List<SysMenu> menus = menuService.selectMenuList(SecurityUtils.getUserId());
-        Map<String, Object> ajax = new HashMap<>();
-        ajax.put("checkedKeys", menuService.selectMenuListByRoleId(roleId));
-        ajax.put("menus", menuService.buildMenuTreeSelect(menus));
-        return Result.success(ajax);
     }
 
     /**
@@ -113,6 +67,4 @@ public class SysMenuController {
         menuService.deleteMenu(menuId);
         return Result.success();
     }
-
-
 }
