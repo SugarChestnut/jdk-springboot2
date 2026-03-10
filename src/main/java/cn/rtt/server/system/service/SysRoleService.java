@@ -3,7 +3,8 @@ package cn.rtt.server.system.service;
 
 import cn.rtt.server.system.domain.entity.SysRole;
 import cn.rtt.server.system.domain.entity.SysUserRole;
-import com.baomidou.mybatisplus.core.metadata.IPage;
+import cn.rtt.server.system.domain.request.role.RoleSearchRequest;
+import cn.rtt.server.system.domain.response.SysPage;
 
 import java.util.List;
 import java.util.Set;
@@ -26,7 +27,7 @@ public interface SysRoleService {
      */
     Set<String> selectRolePermissionByUserId(Long userId);
 
-    IPage<SysRole> selectRolePage(SysRole role);
+    SysPage<SysRole> selectRolePage(RoleSearchRequest request);
 
     List<SysRole> selectRoleList(SysRole role);
 

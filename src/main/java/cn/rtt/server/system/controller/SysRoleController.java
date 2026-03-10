@@ -1,7 +1,8 @@
 package cn.rtt.server.system.controller;
 
-import cn.rtt.server.system.constant.RoleEnum;
 import cn.rtt.server.system.domain.LoginUser;
+import cn.rtt.server.system.domain.request.role.RoleSearchRequest;
+import cn.rtt.server.system.domain.response.SysPage;
 import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.domain.entity.SysRole;
 import cn.rtt.server.system.domain.entity.SysUserRole;
@@ -38,9 +39,9 @@ public class SysRoleController {
 
 
     @PreAuthorize("@ss.hasPermission('system:role:list')")
-    @PostMapping("/page")
-    public Result page(@RequestBody SysRole role) {
-        return Result.success(roleService.selectRolePage(role));
+    @PostMapping("/list")
+    public Result<SysPage<SysRole>> page(@RequestBody RoleSearchRequest request) {
+        return Result.success(roleService.selectRolePage(request));
     }
 
     /**

@@ -1,7 +1,6 @@
 package cn.rtt.server.system.service;
 
 import cn.rtt.server.system.constant.ResultCode;
-import cn.rtt.server.system.constant.RoleEnum;
 import cn.rtt.server.system.constant.UserConstants;
 import cn.rtt.server.system.dao.SysRoleMenuRepository;
 import cn.rtt.server.system.dao.SysRoleRepository;
@@ -9,6 +8,8 @@ import cn.rtt.server.system.dao.SysUserRoleRepository;
 import cn.rtt.server.system.domain.entity.SysRole;
 import cn.rtt.server.system.domain.entity.SysRoleMenu;
 import cn.rtt.server.system.domain.entity.SysUserRole;
+import cn.rtt.server.system.domain.request.role.RoleSearchRequest;
+import cn.rtt.server.system.domain.response.SysPage;
 import cn.rtt.server.system.exception.SystemException;
 import cn.rtt.server.system.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -48,15 +49,14 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public IPage<SysRole> selectRolePage(SysRole role) {
-
-        IPage<SysRole> buildPage = new Page<>(1, 10);
-        LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(role.getStatus() != null, SysRole::getStatus, role.getStatus());
-        wrapper.like(StringUtils.isNotBlank(role.getRoleName()), SysRole::getRoleName, role.getRoleName());
-        wrapper.orderByDesc(SysRole::getGmtCreate);
-        roleRepository.page(buildPage, wrapper);
-        return buildPage;
+    public SysPage<SysRole> selectRolePage(RoleSearchRequest request) {
+        IPage<SysRole> page = new Page<>(request.getPageNum(), request.getPageSize());
+        LambdaQueryWrapper<SysRole> w = new LambdaQueryWrapper<>();
+        w.like(StringUtils.isNotBlank(request.getRoleName()), SysRole::getRoleName, request.getRoleName());
+        w.like(StringUtils.isNotBlank(request.getRoleKey()), SysRole::getRoleKey, request.getRoleKey());
+        w.orderByDesc(SysRole::getRoleId);
+        roleRepository.page(page, w);
+        return SysPage.transform(page);
     }
 
     @Override
