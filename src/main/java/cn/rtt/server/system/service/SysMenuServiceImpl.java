@@ -49,8 +49,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public List<SysMenu> getMenuTree(MenuSearchRequest request) {
-        List<SysMenu> menus = getMenus(request);
-        return buildMenuTree(menus);
+        return buildMenuTree(getMenus(request));
     }
 
     private List<SysMenu> getMenus(MenuSearchRequest request) {
@@ -87,6 +86,7 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     public void updateMenu(SysMenu menu) {
+        if (menu.getMenuId() == null) throw new IllegalArgumentException("未指定菜单");
         checkMenu(menu);
         menuRepository.updateById(menu);
     }
@@ -94,7 +94,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     private void checkMenu(SysMenu menu) {
         LambdaQueryWrapper<SysMenu> w1 = new LambdaQueryWrapper<>();
         w1.eq(SysMenu::getTitle, menu.getTitle());
-        w1.eq(menu.getParentId() != null, SysMenu::getParentId, menu.getParentId());
+        w1.eq(SysMenu::getParentId, menu.getParentId() != null ? menu.getParentId() : 0);
         if (menu.getMenuId() != null) {
             List<SysMenu> list = menuRepository.list(w1);
             for (SysMenu sysMenu : list) {

@@ -41,7 +41,7 @@ public class SysRoleController {
     @PreAuthorize("@ss.hasPermission('system:role:list')")
     @PostMapping("/list")
     public Result<SysPage<SysRole>> page(@RequestBody RoleSearchRequest request) {
-        return Result.success(roleService.selectRolePage(request));
+        return Result.success(roleService.pageSearch(request));
     }
 
     /**

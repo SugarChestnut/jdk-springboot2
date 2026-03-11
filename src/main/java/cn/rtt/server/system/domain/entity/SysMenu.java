@@ -46,10 +46,4 @@ public class SysMenu extends BaseEntity {
     @TableField(exist = false)
     private Map<String, Object> params = new HashMap<>();
 
-    /**
-     *  禁用自己
-     */
-    @TableField(exist = false)
-    private Integer notNextAllNodeId;
-
 }

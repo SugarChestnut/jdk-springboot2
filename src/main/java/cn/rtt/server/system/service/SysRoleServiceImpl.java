@@ -36,6 +36,11 @@ public class SysRoleServiceImpl implements SysRoleService {
     private final SysUserRoleRepository userRoleRepository;
     private final SysRoleMenuService roleMenuService;
 
+    /**
+     * ???
+     * @param userId 用户ID
+     * @return
+     */
     @Override
     public Set<String> selectRolePermissionByUserId(Long userId) {
         List<SysRole> perms = roleRepository.getBaseMapper().selectRolePermissionByUserId(userId);
@@ -49,7 +54,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public SysPage<SysRole> selectRolePage(RoleSearchRequest request) {
+    public SysPage<SysRole> pageSearch(RoleSearchRequest request) {
         IPage<SysRole> page = new Page<>(request.getPageNum(), request.getPageSize());
         LambdaQueryWrapper<SysRole> w = new LambdaQueryWrapper<>();
         w.like(StringUtils.isNotBlank(request.getRoleName()), SysRole::getRoleName, request.getRoleName());
@@ -69,6 +74,11 @@ public class SysRoleServiceImpl implements SysRoleService {
         return roleRepository.list(wrapper);
     }
 
+    /**
+     * ???
+     * @param roleId
+     * @return
+     */
     @Override
     public SysRole selectRoleById(Long roleId) {
         SysRole role = roleRepository.getById(roleId);

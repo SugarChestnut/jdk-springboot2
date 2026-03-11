@@ -33,6 +33,7 @@ public class SysMenuController {
     /**
      * 获取当前登录用户菜单信息
      */
+    @PreAuthorize("@ss.hasPermission('system:menu:list')")
     @RequestMapping("/tree")
     public Result<List<SysMenu>> tree(@RequestBody MenuSearchRequest request) {
         return Result.success(menuService.getMenuTree(request));

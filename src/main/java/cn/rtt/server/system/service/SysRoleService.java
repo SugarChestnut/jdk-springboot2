@@ -27,7 +27,7 @@ public interface SysRoleService {
      */
     Set<String> selectRolePermissionByUserId(Long userId);
 
-    SysPage<SysRole> selectRolePage(RoleSearchRequest request);
+    SysPage<SysRole> pageSearch(RoleSearchRequest request);
 
     List<SysRole> selectRoleList(SysRole role);
 
