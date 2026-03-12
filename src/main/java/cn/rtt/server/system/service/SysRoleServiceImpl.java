@@ -130,6 +130,7 @@ public class SysRoleServiceImpl implements SysRoleService {
             List<SysRoleMenu> roleMenus = roleMenuRepository.list(w);
             Set<Long> oldMenuIds = roleMenus.stream().map(SysRoleMenu::getMenuId).collect(Collectors.toSet());
             if (CollectionUtils.equals(role.getMenuIds(), oldMenuIds)) return;
+
             roleMenuRepository.remove(w);
         }
         if (CollectionUtils.isNotEmpty(role.getMenuIds())) {
@@ -142,11 +143,12 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     private void saveRoleDept(SysRole role, boolean update) {
         if (update) {
-            SysRole oldRole = roleRepository.getById(role.getRoleId());
-            if (oldRole.getDataScope().equals(role.getDataScope())) return;
-
             LambdaQueryWrapper<SysRoleDept> w = new LambdaQueryWrapper<>();
             w.eq(SysRoleDept::getRoleId, role.getRoleId());
+            List<SysRoleDept> roleDepts = roleDeptRepository.list(w);
+            Set<Long> oldDeptIds = roleDepts.stream().map(SysRoleDept::getDeptId).collect(Collectors.toSet());
+            if (CollectionUtils.equals(role.getDeptIds(), oldDeptIds)) return;
+
             roleDeptRepository.remove(w);
         }
         if (DataScopeEnum.CUSTOM.getCode().equals(role.getDataScope())

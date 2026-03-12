@@ -80,7 +80,7 @@ public class SysRoleController {
      * 状态修改
      */
     @PreAuthorize("@ss.hasPermission('system:role:edit')")
-    @PutMapping("/changeStatus")
+    @RequestMapping("/changeStatus")
     public Result<?> changeStatus(@RequestBody SysRole role) {
         roleService.updateRoleStatus(role);
         return Result.success();
