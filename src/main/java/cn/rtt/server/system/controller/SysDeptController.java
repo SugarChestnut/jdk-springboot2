@@ -34,7 +34,7 @@ public class SysDeptController {
      * 新增菜单
      */
     @PreAuthorize("@ss.hasPermission('system:dept:create')")
-    @PostMapping("create")
+    @PostMapping("/create")
     public Result<?> create(@Validated @RequestBody SysDept dept) {
         deptService.createDept(dept);
         return Result.success();
@@ -44,8 +44,8 @@ public class SysDeptController {
      * 修改菜单
      */
     @PreAuthorize("@ss.hasPermission('system:dept:edit')")
-    @PostMapping("update")
-    public Result<?> edit(@Validated @RequestBody SysDept dept) {
+    @PostMapping("/update")
+    public Result<?> update(@Validated @RequestBody SysDept dept) {
         deptService.updateDept(dept);
         return Result.success();
     }

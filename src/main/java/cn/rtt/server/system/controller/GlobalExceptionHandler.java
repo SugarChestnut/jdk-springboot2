@@ -32,6 +32,11 @@ public class GlobalExceptionHandler {
         return Result.error(ResultCode.PARAM_ERROR);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Result<?> illegalArgumentException(Exception e) {
+        return Result.error(e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public Result<?> exception(Exception e) throws Exception {
         log.error("系统错误", e);

@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
 
@@ -31,10 +33,12 @@ public class SysRole extends BaseEntity {
     /**
      * 角色名称
      */
+    @NotEmpty(message = "角色名称不能为空")
     private String roleName;
     /**
      * 角色权限字符串
      */
+    @NotEmpty(message = "角色权限不能为空")
     private String roleKey;
     /**
      * 角色状态（0正常 1停用）
@@ -44,7 +48,16 @@ public class SysRole extends BaseEntity {
      * 备注
      */
     private String remark;
+    /**
+     * 数据权限
+     * {@link cn.rtt.server.system.constant.DataScopeEnum}
+     */
+    @NotEmpty(message = "角色数据权限不能为空")
+    private String dataScope;
 
     @TableField(exist = false)
-    private List<SysMenu> menus;
+    private Set<Long> menuIds;
+
+    @TableField(exist = false)
+    private Set<Long> deptIds;
 }

@@ -20,56 +20,31 @@ import java.util.Set;
 public interface SysRoleService {
 
     /**
-     * 根据用户ID查询角色权限
-     *
-     * @param userId 用户ID
-     * @return 权限列表
+     * 分页搜素角色
      */
-    Set<String> selectRolePermissionByUserId(Long userId);
-
     SysPage<SysRole> pageSearch(RoleSearchRequest request);
+    /**
+     * 根据角色ID查询当前角色分配的菜单ID
+     */
+    Set<Long> menu(Long roleId);
+    /**
+     * 根据角色ID查询当前角色分配数据权限部门
+     */
+    Set<Long> dept(Long roleId);
+    /**
+     * 新增保存角色信息
+     */
+    void createRole(SysRole role);
+
+    /**
+     * 更新角色
+     */
+    void updateRole(SysRole role);
 
     List<SysRole> selectRoleList(SysRole role);
 
     SysRole selectRoleById(Long roleId);
 
-    /**
-     * 校验角色名称是否唯一
-     *
-     * @param role 角色信息
-     * @return 结果
-     */
-    boolean checkRoleNameUnique(SysRole role);
-
-    /**
-     * 校验角色权限是否唯一
-     *
-     * @param role 角色信息
-     * @return 结果
-     */
-    boolean checkRoleKeyUnique(SysRole role);
-
-    /**
-     * 新增保存角色信息
-     *
-     * @param role 角色信息
-     * @return 结果
-     */
-    int insertRole(SysRole role);
-
-    int insertRoleMenu(SysRole role);
-
-    /**
-     * 校验角色是否允许操作
-     */
-    void checkRoleAllowed(Long roleId);
-
-    /**
-     * 校验角色是否有数据权限
-     *
-     * @param roleIds 角色id
-     */
-    void checkRoleDataScope(List<Long> roleIds);
 
     void updateRoleStatus(SysRole role);
 
@@ -81,5 +56,5 @@ public interface SysRoleService {
 
     Boolean addAuthUser(SysUserRole userRole);
 
-    void updateRole(SysRole role);
+
 }

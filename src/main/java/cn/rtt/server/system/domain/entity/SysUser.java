@@ -54,6 +54,8 @@ public class SysUser extends BaseEntity {
 
     private String loginIp;
 
+    private Long deptId;
+
     @TableField(exist = false)
     @JsonIgnore
     private List<SysRole> roles;

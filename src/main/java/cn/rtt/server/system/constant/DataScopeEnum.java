@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * 对应数据范围选项：全部、自定、本部门、本部门及以下、仅本人
  */
 @Getter
-public enum DataRoleEnum {
+public enum DataScopeEnum {
 
     ALL("1", "全部数据权限"),
     CUSTOM("2", "自定数据权限"),
@@ -23,30 +23,30 @@ public enum DataRoleEnum {
     /**
      * 权限值（对应数据库存储的值）
      */
-    private final String value;
+    private final String code;
 
     /**
      * 权限描述（对应前端显示的标签）
      */
-    private final String label;
+    private final String desc;
 
     /**
      * 构造方法
      */
-    DataRoleEnum(String value, String label) {
-        this.value = value;
-        this.label = label;
+    DataScopeEnum(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
     }
 
     /**
      * 根据value获取枚举
      */
-    public static DataRoleEnum getByValue(String value) {
-        if (value == null) {
+    public static DataScopeEnum getByCode(String code) {
+        if (code == null) {
             return null;
         }
-        for (DataRoleEnum dataRole : DataRoleEnum.values()) {
-            if (dataRole.getValue().equals(value)) {
+        for (DataScopeEnum dataRole : DataScopeEnum.values()) {
+            if (dataRole.getCode().equals(code)) {
                 return dataRole;
             }
         }
@@ -56,22 +56,22 @@ public enum DataRoleEnum {
     /**
      * 根据value获取label
      */
-    public static String getLabelByValue(String value) {
-        DataRoleEnum dataRole = getByValue(value);
-        return dataRole != null ? dataRole.getLabel() : null;
+    public static String getDesc(String code) {
+        DataScopeEnum dataRole = getByCode(code);
+        return dataRole != null ? dataRole.getDesc() : null;
     }
 
     /**
      * 判断是否为指定权限
      */
-    public boolean equals(String value) {
-        return this.value.equals(value);
+    public boolean equals(String code) {
+        return this.code.equals(code);
     }
 
 
     public static List<Option> options() {
-        return Arrays.stream(DataRoleEnum.values())
-                .map(d -> new Option(d.getLabel(), d.getValue()))
+        return Arrays.stream(DataScopeEnum.values())
+                .map(d -> new Option(d.getDesc(), d.getCode()))
                 .collect(Collectors.toList());
     }
 }

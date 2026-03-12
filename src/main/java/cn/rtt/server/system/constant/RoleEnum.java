@@ -11,17 +11,17 @@ public enum RoleEnum {
     ADMIN_ROLE("admin", "管理员")
     ;
 
-    private final String key;
-    private final String info;
+    private final String code;
+    private final String desc;
 
-    RoleEnum(String key, String info) {
-        this.key = key;
-        this.info = info;
+    RoleEnum(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
     }
 
-    public boolean isContain(String key) {
+    public boolean isContain(String code) {
         for (RoleEnum role : RoleEnum.values()) {
-            if (role.key.equals(key)) return true;
+            if (role.code.equals(code)) return true;
         }
         return false;
     }
@@ -39,7 +39,7 @@ public enum RoleEnum {
             return false;
         }
         for (SysRole role : roles) {
-            if (roleEnum.key.equals(role.getRoleKey())) {
+            if (roleEnum.code.equals(role.getRoleKey())) {
                 return true;
             }
         }

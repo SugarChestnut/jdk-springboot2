@@ -9,11 +9,11 @@ import lombok.experimental.Accessors;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-@TableName("sys_role_menu")
+@TableName("sys_role_dept")
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysRoleMenu extends BaseEntity {
+public class SysRoleDept extends BaseEntity {
 
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
@@ -25,10 +25,10 @@ public class SysRoleMenu extends BaseEntity {
     /**
      * 菜单ID
      */
-    private Long menuId;
+    private Long deptId;
 
-    public SysRoleMenu(Long roleId, Long menuId) {
+    public SysRoleDept(Long roleId, Long deptId) {
         this.roleId = roleId;
-        this.menuId = menuId;
+        this.deptId = deptId;
     }
 }
