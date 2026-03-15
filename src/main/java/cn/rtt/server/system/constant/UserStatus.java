@@ -21,4 +21,11 @@ public enum UserStatus {
         this.code = code;
         this.desc = desc;
     }
+
+    public static String getDescByCode(int code) {
+        for (UserStatus status : values()) {
+            if (status.code == code) return status.desc;
+        }
+        return null;
+    }
 }

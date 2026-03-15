@@ -23,15 +23,23 @@ public class SysDeptController {
     private final SysDeptService deptService;
 
     /**
-     * 获取当前登录用户菜单信息
+     * 获取部门树
      */
-    @RequestMapping("/tree")
-    public Result<List<SysDept>> treeSearch(@RequestBody DeptSearchRequest request) {
-        return Result.success(deptService.treeSearch(request));
+    @RequestMapping("/search")
+    public Result<List<SysDept>> search(@RequestBody DeptSearchRequest request) {
+        return Result.success(deptService.search(request));
     }
 
     /**
-     * 新增菜单
+     * 获取部门用户筛选，不构建树
+     */
+    @RequestMapping("/select")
+    public Result<List<SysDept>> select(@RequestBody DeptSearchRequest request) {
+        return Result.success(deptService.searchForSelect(request));
+    }
+
+    /**
+     * 新增部门
      */
     @PreAuthorize("@ss.hasPermission('system:dept:create')")
     @PostMapping("/create")
@@ -41,7 +49,7 @@ public class SysDeptController {
     }
 
     /**
-     * 修改菜单
+     * 修改部门
      */
     @PreAuthorize("@ss.hasPermission('system:dept:edit')")
     @PostMapping("/update")
@@ -51,7 +59,7 @@ public class SysDeptController {
     }
 
     /**
-     * 删除菜单
+     * 删除部门
      */
     @PreAuthorize("@ss.hasPermission('system:dept:delete')")
     @GetMapping("/delete/{deptId}")

@@ -9,4 +9,5 @@ import lombok.Data;
 @Data
 public class DeptSearchRequest {
     private String deptName;
+    private Integer status;
 }

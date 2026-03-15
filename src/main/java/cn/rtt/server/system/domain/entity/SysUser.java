@@ -59,4 +59,10 @@ public class SysUser extends BaseEntity {
     @TableField(exist = false)
     @JsonIgnore
     private List<SysRole> roles;
+
+    @TableField(exist = false)
+    private String statusDesc;
+
+    @TableField(exist = false)
+    private String deptName;
 }

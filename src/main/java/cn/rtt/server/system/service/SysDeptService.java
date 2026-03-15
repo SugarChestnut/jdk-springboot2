@@ -10,7 +10,9 @@ public interface SysDeptService {
     /**
      * 获取部门树
      */
-    List<SysDept> treeSearch(DeptSearchRequest request);
+    List<SysDept> search(DeptSearchRequest request);
+
+    List<SysDept> searchForSelect(DeptSearchRequest request);
 
     void createDept(SysDept sysDept);
 

@@ -51,8 +51,7 @@ public class SysDept extends BaseEntity{
     /** 邮箱 */
     private String email;
 
-    /** 状态（false正常 true停用） */
-    private Boolean status;
+    private Integer status;
 
     /** 备注 */
     private String remark;

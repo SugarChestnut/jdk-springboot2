@@ -1,20 +1,12 @@
 package cn.rtt.server.system.service;
 
 import cn.rtt.server.system.constant.DataScopeEnum;
-import cn.rtt.server.system.constant.ResultCode;
 import cn.rtt.server.system.constant.RoleEnum;
-import cn.rtt.server.system.constant.UserConstants;
-import cn.rtt.server.system.dao.SysRoleDeptRepository;
-import cn.rtt.server.system.dao.SysRoleMenuRepository;
-import cn.rtt.server.system.dao.SysRoleRepository;
-import cn.rtt.server.system.dao.SysUserRoleRepository;
-import cn.rtt.server.system.domain.LoginUser;
-import cn.rtt.server.system.domain.entity.SysRole;
-import cn.rtt.server.system.domain.entity.SysRoleDept;
-import cn.rtt.server.system.domain.entity.SysRoleMenu;
-import cn.rtt.server.system.domain.entity.SysUserRole;
+import cn.rtt.server.system.constant.UserStatus;
+import cn.rtt.server.system.dao.*;
+import cn.rtt.server.system.domain.entity.*;
+import cn.rtt.server.system.domain.request.role.AuthUserRequest;
 import cn.rtt.server.system.domain.request.role.RoleSearchRequest;
-import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.domain.response.SysPage;
 import cn.rtt.server.system.exception.SystemException;
 import cn.rtt.server.system.utils.CollectionUtils;
@@ -44,14 +36,15 @@ public class SysRoleServiceImpl implements SysRoleService {
     private final SysRoleMenuRepository roleMenuRepository;
     private final SysRoleDeptRepository roleDeptRepository;
     private final SysUserRoleRepository userRoleRepository;
-    private final SysRoleMenuService roleMenuService;
+    private final SysUserRepository userRepository;
 
     @Override
-    public SysPage<SysRole> pageSearch(RoleSearchRequest request) {
+    public SysPage<SysRole> search(RoleSearchRequest request) {
         IPage<SysRole> page = new Page<>(request.getPageNum(), request.getPageSize());
         LambdaQueryWrapper<SysRole> w = new LambdaQueryWrapper<>();
         w.like(StringUtils.isNotBlank(request.getRoleName()), SysRole::getRoleName, request.getRoleName());
         w.like(StringUtils.isNotBlank(request.getRoleKey()), SysRole::getRoleKey, request.getRoleKey());
+        w.ne(SysRole::getRoleKey, RoleEnum.SUPER_ADMIN.getCode());
         w.orderByDesc(SysRole::getRoleId);
         roleRepository.page(page, w);
         return SysPage.transform(page);
@@ -74,16 +67,6 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     @Override
-    public List<SysRole> selectRoleList(SysRole role) {
-        LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StringUtils.isNotEmpty(role.getRoleKey()), SysRole::getRoleKey, role.getRoleKey())
-                .eq(SysRole::getStatus, 0)
-                .like(StringUtils.isNotEmpty(role.getRoleName()), SysRole::getRoleName, role.getRoleName())
-                .orderByDesc(SysRole::getGmtCreate);
-        return roleRepository.list(wrapper);
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public void createRole(SysRole role) {
         checkRole(role);
@@ -100,6 +83,57 @@ public class SysRoleServiceImpl implements SysRoleService {
         saveRoleDept(role, true);
         roleRepository.updateById(role);
     }
+
+    @Override
+    @Transactional
+    public void authUser(AuthUserRequest request) {
+        SysRole role = roleRepository.getById(request.getRoleId());
+        if (role == null || role.getStatus()) throw new IllegalArgumentException("角色不存在或已停用");
+
+        if (RoleEnum.SUPER_ADMIN.getCode().equals(role.getRoleKey())) throw new IllegalArgumentException("不能分配超级管理员角色");
+
+        if (!SecurityUtils.isSupAdmin() && RoleEnum.ADMIN_ROLE.getCode().equals(role.getRoleKey()))
+            throw new IllegalArgumentException("当前用户不能分配管理员角色");
+
+        Long[] userIds = request.getUserIds();
+        if (userIds == null || userIds.length == 0) throw new IllegalArgumentException("未选择用户");
+
+        List<SysUser> users = userRepository.listByIds(List.of(userIds));
+        List<SysUser> collect = users.stream().filter(u -> UserStatus.OK.getCode() == u.getStatus()).collect(Collectors.toList());
+        if (collect.size() != userIds.length) throw new IllegalArgumentException("非正常用户");
+
+        LambdaQueryWrapper<SysUserRole> w = new LambdaQueryWrapper<>();
+        w.eq(SysUserRole::getRoleId, request.getRoleId());
+        w.in(SysUserRole::getUserId, List.of(userIds));
+        List<SysUserRole> list = userRoleRepository.list(w);
+        Set<Long> exist = list.stream().map(SysUserRole::getUserId).collect(Collectors.toSet());
+        List<SysUserRole> entities = new ArrayList<>();
+        Arrays.stream(userIds).filter(i -> !exist.contains(i)).forEach(i -> entities.add(new SysUserRole(i, request.getRoleId())));
+        userRoleRepository.saveBatch(entities, 100);
+    }
+
+    @Override
+    @Transactional
+    public void unAuthUser(AuthUserRequest request) {
+        if (request.getRoleId() == null) throw new IllegalArgumentException("未指定角色");
+
+        Long[] userIds = request.getUserIds();
+        if (userIds == null || userIds.length == 0) throw new IllegalArgumentException("未选择用户");
+
+        SysRole role = roleRepository.getById(request.getRoleId());
+        if (role != null) {
+            if (RoleEnum.SUPER_ADMIN.getCode().equals(role.getRoleKey())) throw new IllegalArgumentException("不能删除超级管理员角色");
+
+            if (!SecurityUtils.isSupAdmin() && RoleEnum.ADMIN_ROLE.getCode().equals(role.getRoleKey()))
+                throw new IllegalArgumentException("当前用户不能取消管理员角色");
+        }
+
+        LambdaQueryWrapper<SysUserRole> w = new LambdaQueryWrapper<>();
+        w.eq(SysUserRole::getRoleId, request.getRoleId());
+        w.in(SysUserRole::getUserId, List.of(userIds));
+        userRoleRepository.remove(w);
+    }
+
 
     private void checkRole(SysRole role) {
         if (RoleEnum.SUPER_ADMIN.getCode().equals(role.getRoleKey())
@@ -173,66 +207,13 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long roleId) {
-        SysRole role = selectRoleById(roleId);
         if (userRoleRepository.getBaseMapper().countUserRoleByRoleId(roleId) > 0) {
-            throw new SystemException(String.format("%1$s已分配,不能删除", role.getRoleName()));
+            throw new SystemException("请先取消该角色的用户授权");
         }
         // 删除角色与菜单关联
         LambdaUpdateWrapper<SysRoleMenu> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(SysRoleMenu::getRoleId, roleId);
         roleMenuRepository.getBaseMapper().delete(wrapper);
         roleRepository.removeById(roleId);
-    }
-
-    @Override
-    public List<SysRole> selectRoleAll() {
-        List<SysRole> sysRoles = this.selectRoleList(new SysRole());
-//        if (!SecurityUtils.isSup()) {
-//
-//            sysRoles = sysRoles.stream().filter(filter ->  filter.getCompanyId()==null &&
-//                            !Lists.newArrayList(RoleEnum.ADMIN_ROLE.getCode(), RoleEnum.SUP_ROLE.getCode(), RoleEnum.COM_ROLE.getCode()).contains(filter.getRoleId())).
-//                    collect(Collectors.toList());
-//        } else{
-//
-//        }
-
-        return sysRoles;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Boolean deleteAuthUser(SysUserRole userRole) {
-        return userRoleRepository.getBaseMapper().deleteData(userRole) > 0;
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Boolean addAuthUser(SysUserRole userRole) {
-        LambdaQueryWrapper<SysUserRole> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysUserRole::getUserId, userRole.getUserId()).eq(SysUserRole::getRoleId, userRole.getRoleId());
-        if (CollectionUtils.isNotEmpty(userRoleRepository.list(wrapper))) {
-            throw new SystemException(ResultCode.USER_ALREADY);
-        }
-        return userRoleRepository.save(userRole);
-    }
-
-    /**
-     * ???
-     *
-     * @param roleId
-     * @return
-     */
-    @Override
-    public SysRole selectRoleById(Long roleId) {
-        SysRole role = roleRepository.getById(roleId);
-//        if (role == null) {
-//            throw new SystemException(ResultCode.CODE_ERROR);
-//        }
-//
-//        List<SysRoleMenu> roleMenus = roleMenuService.getByRoleId(roleId);
-//        if (CollectionUtils.isNotEmpty(roleMenus)) {
-//            role.setMenuIds(roleMenus.stream().map(SysRoleMenu::getMenuId).distinct().toArray(Long[]::new));
-//        }
-        return role;
     }
 }

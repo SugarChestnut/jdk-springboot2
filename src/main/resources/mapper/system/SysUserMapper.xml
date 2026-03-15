@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.rtt.server.system.mapper.SysUserMapper">
+
+    <resultMap id="UserResultWidthRole" type="cn.rtt.server.system.domain.entity.SysUser">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="gender" column="gender"/>
+        <result property="avatarUrl" column="avatar_url"/>
+        <result property="status" column="status"/>
+        <result property="mobile" column="mobile"/>
+        <result property="loginIp" column="login_ip"/>
+        <result property="loginTime" column="login_time"/>
+        <result property="gmtCreate" column="gmt_create"/>
+        <result property="gmtModified" column="gmt_modified"/>
+        <collection property="roles" javaType="java.util.List" resultMap="RoleResult"/>
+    </resultMap>
+
     <resultMap id="UserResult" type="cn.rtt.server.system.domain.entity.SysUser">
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
@@ -10,10 +26,9 @@
         <result property="status" column="status"/>
         <result property="mobile" column="mobile"/>
         <result property="loginIp" column="login_ip"/>
-        <result property="lastLoginTime" column="last_login_time"/>
+        <result property="loginTime" column="login_time"/>
         <result property="gmtCreate" column="gmt_create"/>
         <result property="gmtModified" column="gmt_modified"/>
-        <collection property="roles" javaType="java.util.List" resultMap="RoleResult"/>
     </resultMap>
 
     <resultMap id="RoleResult" type="cn.rtt.server.system.domain.entity.SysRole">
@@ -30,147 +45,189 @@
                  left join sys_role r on r.role_id = ur.role_id
     </sql>
 
-    <select id="selectPageData" resultMap="UserResult">
-        select distinct u.*, r.role_name,r.role_id, r.role_key,r.menu_check_strictly, r.remark
-        from sys_user u
-        left join sys_user_role ur on u.user_id = ur.user_id
-        left join sys_role r on r.role_id = ur.role_id
-        <where>
-            <if test="user.userId != null and user.userId != 0">
-                AND u.user_id != #{user.userId}
-            </if>
-            <if test="user.username != null and user.username != ''">
-                AND u.username like concat('%', #{user.username}, '%')
-            </if>
-            <if test="user.status != null and user.status != ''">
-                AND u.status = #{user.status}
-            </if>
-            <if test="user.gender != null">
-                AND u.gender = #{user.gender}
-            </if>
-            <if test="user.mobile != null and user.mobile != ''">
-                AND u.mobile like concat('%', #{user.mobile}, '%')
-            </if>
-            <if test="user.nickname != null and user.nickname != ''">
-                AND u.nickname like concat('%', #{user.nickname}, '%')
-            </if>
-            <if test="user.personName != null and user.personName != ''">
-                AND u.person_name like concat('%', #{user.personName}, '%')
-            </if>
-            <if test="user.roleId!=null and user.roleId!=''">
-                AND r.role_id=#{user.roleId}
-            </if>
-        </where>
-        order by u.user_id desc
-    </select>
-
-    <select id="selectUserById" resultMap="UserResult" parameterType="java.lang.Long">
-        <include refid="selectUserVo"/>
-        where u.user_id = #{id}
-    </select>
-
-    <select id="selectLists" resultType="cn.rtt.server.system.domain.entity.SysUser">
-        select u.* from sys_user u
-        where 1=1
-        <if test="user.userId != null and user.userId != 0">
-            AND u.user_id = #{user.userId}
-        </if>
-        <if test="user.username != null and user.username != ''">
-            AND u.username like concat('%', #{user.username}, '%')
-        </if>
-        <if test="user.status != null and user.status != ''">
-            AND u.status = #{user.status}
-        </if>
-        <if test="user.mobile != null and user.mobile != ''">
-            AND u.mobile like concat('%', #{user.mobile}, '%')
-        </if>
-    </select>
-
-    <select id="selectByUsername" resultMap="UserResult">
+    <select id="selectByUsername" resultMap="UserResultWidthRole">
         <include refid="selectUserVo"/>
         where u.username = #{userName} and u.status = '0'
     </select>
 
-    <select id="selectUserByPhone" resultType="cn.rtt.server.system.domain.entity.SysUser"
-            parameterType="cn.rtt.server.system.domain.entity.SysUser">
-        select *
-        from sys_user
-        where mobile = #{user.mobile}
+    <select id="search" resultMap="UserResult">
+        select distinct t1.*
+        from sys_user t1
+        left join sys_user_role t2 on t1.user_id = t2.user_id
+        where
+        t1.status != 2
+        <if test="request.username != null and request.username != ''">
+            AND t1.username like concat('%', #{request.username}, '%')
+        </if>
+        <if test="request.mobile != null and request.mobile != ''">
+            AND t1.mobile = #{request.mobile}
+        </if>
+        <if test="request.status != null">
+            and t1.status = #{request.status}
+        </if>
+        <if test="request.roleId != null">
+            AND t2.role_id = #{request.roleId}
+        </if>
+        <if test="request.deptId != null">
+            AND t1.dept_id = #{request.deptId}
+        </if>
+        <if test="request.noRoleId != null">
+            and t1.user_id not in (
+            select distinct t3.user_id
+            from sys_user t3
+            left join sys_user_role t4 on t3.user_id = t4.user_id
+            where t4.role_id = #{request.noRoleId}
+            )
+        </if>
+        <if test="request.superAdminKey != null and request.superAdminKey != ''">
+            and t1.user_id not in (
+            select distinct t5.user_id
+            from sys_user t5
+            left join sys_user_role t6 on t5.user_id = t6.user_id
+            left join sys_role t7 on t6.role_id = t7.role_id
+            where t7.role_key = #{request.superAdminKey}
+            )
+        </if>
     </select>
 
-    <select id="checkAllMobile" resultType="java.lang.Integer">
-        select count(*)
-        from sys_user
-        where mobile = #{mobile}
-          and status = 0
-          and user_id != #{id}
-    </select>
+<!--    <select id="selectPageData" resultMap="UserResult">-->
+<!--        select distinct u.*, r.role_name,r.role_id, r.role_key,r.menu_check_strictly, r.remark-->
+<!--        from sys_user u-->
+<!--        left join sys_user_role ur on u.user_id = ur.user_id-->
+<!--        left join sys_role r on r.role_id = ur.role_id-->
+<!--        <where>-->
+<!--            <if test="user.userId != null and user.userId != 0">-->
+<!--                AND u.user_id != #{user.userId}-->
+<!--            </if>-->
+<!--            <if test="user.username != null and user.username != ''">-->
+<!--                AND u.username like concat('%', #{user.username}, '%')-->
+<!--            </if>-->
+<!--            <if test="user.status != null and user.status != ''">-->
+<!--                AND u.status = #{user.status}-->
+<!--            </if>-->
+<!--            <if test="user.gender != null">-->
+<!--                AND u.gender = #{user.gender}-->
+<!--            </if>-->
+<!--            <if test="user.mobile != null and user.mobile != ''">-->
+<!--                AND u.mobile like concat('%', #{user.mobile}, '%')-->
+<!--            </if>-->
+<!--            <if test="user.nickname != null and user.nickname != ''">-->
+<!--                AND u.nickname like concat('%', #{user.nickname}, '%')-->
+<!--            </if>-->
+<!--            <if test="user.personName != null and user.personName != ''">-->
+<!--                AND u.person_name like concat('%', #{user.personName}, '%')-->
+<!--            </if>-->
+<!--            <if test="user.roleId!=null and user.roleId!=''">-->
+<!--                AND r.role_id=#{user.roleId}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        order by u.user_id desc-->
+<!--    </select>-->
 
-    <select id="selectByMobileTypeStatus" resultType="cn.rtt.server.system.domain.entity.SysUser">
-        select * from sys_user
-        <where>
-            <if test="mobile!=null and mobile!=''">
+<!--    <select id="selectUserById" resultMap="UserResult" parameterType="java.lang.Long">-->
+<!--        <include refid="selectUserVo"/>-->
+<!--        where u.user_id = #{id}-->
+<!--    </select>-->
 
-                and mobile=#{mobile}
-            </if>
-            <if test="status!=null  ">
+<!--    <select id="selectLists" resultType="cn.rtt.server.system.domain.entity.SysUser">-->
+<!--        select u.* from sys_user u-->
+<!--        where 1=1-->
+<!--        <if test="user.userId != null and user.userId != 0">-->
+<!--            AND u.user_id = #{user.userId}-->
+<!--        </if>-->
+<!--        <if test="user.username != null and user.username != ''">-->
+<!--            AND u.username like concat('%', #{user.username}, '%')-->
+<!--        </if>-->
+<!--        <if test="user.status != null and user.status != ''">-->
+<!--            AND u.status = #{user.status}-->
+<!--        </if>-->
+<!--        <if test="user.mobile != null and user.mobile != ''">-->
+<!--            AND u.mobile like concat('%', #{user.mobile}, '%')-->
+<!--        </if>-->
+<!--    </select>-->
 
-                and status=#{status}
-            </if>
-        </where>
-    </select>
 
-    <select id="listData" resultType="cn.rtt.server.system.domain.entity.SysUser">
-        select user_id, username, nickname, person_name, mobile
-        from sys_user
-        where status = 0
-        order by gmt_create desc
-    </select>
 
-    <select id="getAdminUser" resultType="cn.rtt.server.system.domain.entity.SysUser">
+<!--    <select id="selectUserByPhone" resultType="cn.rtt.server.system.domain.entity.SysUser"-->
+<!--            parameterType="cn.rtt.server.system.domain.entity.SysUser">-->
+<!--        select *-->
+<!--        from sys_user-->
+<!--        where mobile = #{user.mobile}-->
+<!--    </select>-->
 
-        select id, username, nickname, person_name, mobile, group_id
-        from sys_user
-                 left join sys_user_role on sys_user.user_id = sys_user_role.user_id
-        where status = 0
-          and sys_user_role.role_id = 2
-        order by sys_user.gmt_create desc
-    </select>
+<!--    <select id="checkAllMobile" resultType="java.lang.Integer">-->
+<!--        select count(*)-->
+<!--        from sys_user-->
+<!--        where mobile = #{mobile}-->
+<!--          and status = 0-->
+<!--          and user_id != #{id}-->
+<!--    </select>-->
 
-    <select id="getBmjl" resultType="cn.rtt.server.system.domain.entity.SysUser">
-        SELECT id,
-               username,
-               nickname,
-               group_id,
-               person_name,
-               mobile
-        FROM sys_user
-                 LEFT JOIN sys_user_role ON sys_user.user_id = sys_user_role.user_id
-                 LEFT JOIN sys_role ON sys_user_role.role_id = sys_role.role_id
-        WHERE sys_user.STATUS = 0
-          AND sys_role.role_key = 'manager'
-    </select>
+<!--    <select id="selectByMobileTypeStatus" resultType="cn.rtt.server.system.domain.entity.SysUser">-->
+<!--        select * from sys_user-->
+<!--        <where>-->
+<!--            <if test="mobile!=null and mobile!=''">-->
 
-    <select id="forSelect" resultType="cn.rtt.server.system.domain.entity.SysUser">
-        SELECT DISTINCT
-        mu.*,st.count
-        FROM
-        sys_user t1
-        LEFT JOIN select_count st ON mu.id = st.user_id AND st.use_id =#{params.loginId}
-        <where>
-            <!-- 根据公司代码过滤 -->
-            <if test="params.companyCode != null and params.companyCode != ''">
-                AND mu.com_code = #{params.companyCode}
-            </if>
-            <!-- 根据姓名模糊查询 -->
-            <if test="params.personName != null and params.personName != ''">
-                AND mu.person_name LIKE CONCAT('%', #{params.personName}, '%')
-            </if>
-            <!-- 根据部门 ID 过滤（仅经理角色） -->
-            <if test="params.role == 'manager' ">
-                AND mu.dept_id = #{params.deptId}
-            </if>
-        </where>
-        order by COALESCE(st.count, 0) DESC
-    </select>
+<!--                and mobile=#{mobile}-->
+<!--            </if>-->
+<!--            <if test="status!=null  ">-->
+
+<!--                and status=#{status}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--    </select>-->
+
+<!--    <select id="listData" resultType="cn.rtt.server.system.domain.entity.SysUser">-->
+<!--        select user_id, username, nickname, person_name, mobile-->
+<!--        from sys_user-->
+<!--        where status = 0-->
+<!--        order by gmt_create desc-->
+<!--    </select>-->
+
+<!--    <select id="getAdminUser" resultType="cn.rtt.server.system.domain.entity.SysUser">-->
+
+<!--        select id, username, nickname, person_name, mobile, group_id-->
+<!--        from sys_user-->
+<!--                 left join sys_user_role on sys_user.user_id = sys_user_role.user_id-->
+<!--        where status = 0-->
+<!--          and sys_user_role.role_id = 2-->
+<!--        order by sys_user.gmt_create desc-->
+<!--    </select>-->
+
+<!--    <select id="getBmjl" resultType="cn.rtt.server.system.domain.entity.SysUser">-->
+<!--        SELECT id,-->
+<!--               username,-->
+<!--               nickname,-->
+<!--               group_id,-->
+<!--               person_name,-->
+<!--               mobile-->
+<!--        FROM sys_user-->
+<!--                 LEFT JOIN sys_user_role ON sys_user.user_id = sys_user_role.user_id-->
+<!--                 LEFT JOIN sys_role ON sys_user_role.role_id = sys_role.role_id-->
+<!--        WHERE sys_user.STATUS = 0-->
+<!--          AND sys_role.role_key = 'manager'-->
+<!--    </select>-->
+
+<!--    <select id="forSelect" resultType="cn.rtt.server.system.domain.entity.SysUser">-->
+<!--        SELECT DISTINCT-->
+<!--        mu.*,st.count-->
+<!--        FROM-->
+<!--        sys_user t1-->
+<!--        LEFT JOIN select_count st ON mu.id = st.user_id AND st.use_id =#{params.loginId}-->
+<!--        <where>-->
+<!--            &lt;!&ndash; 根据公司代码过滤 &ndash;&gt;-->
+<!--            <if test="params.companyCode != null and params.companyCode != ''">-->
+<!--                AND mu.com_code = #{params.companyCode}-->
+<!--            </if>-->
+<!--            &lt;!&ndash; 根据姓名模糊查询 &ndash;&gt;-->
+<!--            <if test="params.personName != null and params.personName != ''">-->
+<!--                AND mu.person_name LIKE CONCAT('%', #{params.personName}, '%')-->
+<!--            </if>-->
+<!--            &lt;!&ndash; 根据部门 ID 过滤（仅经理角色） &ndash;&gt;-->
+<!--            <if test="params.role == 'manager' ">-->
+<!--                AND mu.dept_id = #{params.deptId}-->
+<!--            </if>-->
+<!--        </where>-->
+<!--        order by COALESCE(st.count, 0) DESC-->
+<!--    </select>-->
 </mapper>

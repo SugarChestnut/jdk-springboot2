@@ -27,7 +27,7 @@ public class SysPage<T> {
 
     public static <T> SysPage<T> transform(IPage<T> page, List<T> records) {
         SysPage<T> xxPage = new SysPage<>();
-        if (page.getRecords().isEmpty() && records != null) {
+        if (records != null) {
             xxPage.setRecords(records);
             xxPage.setTotal(records.size());
         } else {

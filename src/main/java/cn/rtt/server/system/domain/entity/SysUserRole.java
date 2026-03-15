@@ -3,24 +3,16 @@ package cn.rtt.server.system.domain.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 
-/**
- * <p>
- * 用户和角色关联表
- * </p>
- *
- * @author xql
- * @since 2024-11-13
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 @TableName("sys_user_role")
 @ToString(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class SysUserRole extends BaseEntity {
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -35,5 +27,8 @@ public class SysUserRole extends BaseEntity {
      */
     private Long roleId;
 
-
+    public SysUserRole(Long userId, Long roleId) {
+        this.userId = userId;
+        this.roleId = roleId;
+    }
 }

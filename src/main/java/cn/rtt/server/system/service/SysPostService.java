@@ -7,7 +7,7 @@ import cn.rtt.server.system.domain.response.SysPage;
 
 public interface SysPostService {
 
-    SysPage<SysPost> pageSearch(PostSearchRequest request);
+    SysPage<SysPost> search(PostSearchRequest request);
 
     void createPost(SysPost post);
 

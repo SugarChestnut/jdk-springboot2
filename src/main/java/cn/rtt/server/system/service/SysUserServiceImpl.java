@@ -1,10 +1,7 @@
 package cn.rtt.server.system.service;
 
 import cn.rtt.server.system.cahce.CacheService;
-import cn.rtt.server.system.constant.CacheConstants;
-import cn.rtt.server.system.constant.ResultCode;
-import cn.rtt.server.system.constant.RoleEnum;
-import cn.rtt.server.system.constant.UserConstants;
+import cn.rtt.server.system.constant.*;
 import cn.rtt.server.system.dao.SysUserRepository;
 import cn.rtt.server.system.dao.SysUserRoleRepository;
 import cn.rtt.server.system.domain.dto.ImageParam;
@@ -13,6 +10,8 @@ import cn.rtt.server.system.domain.dto.UserBaseEdit;
 import cn.rtt.server.system.domain.entity.SysRole;
 import cn.rtt.server.system.domain.entity.SysUser;
 import cn.rtt.server.system.domain.entity.SysUserRole;
+import cn.rtt.server.system.domain.request.user.UserSearchRequest;
+import cn.rtt.server.system.domain.response.SysPage;
 import cn.rtt.server.system.exception.SystemException;
 import cn.rtt.server.system.utils.CollectionUtils;
 import cn.rtt.server.system.utils.SecurityUtils;
@@ -51,17 +50,19 @@ public class SysUserServiceImpl implements SysUserService {
 
     private final CacheService cacheService;
 
-    /**
-     * 根据条件分页查询用户列表
-     *
-     * @param user 用户信息
-     * @return 用户信息集合信息
-     */
     @Override
-    public List<SysUser> selectUserList(SysUser user) {
-        return userRepository.getBaseMapper().selectLists(user);
+    public SysPage<SysUser> search(UserSearchRequest request) {
+        IPage<SysUser> page = new Page<>(request.getPageNum(), request.getPageSize());
+        if (!SecurityUtils.isSupAdmin()) {
+            request.setSuperAdminKey(RoleEnum.SUPER_ADMIN.getCode());
+        }
+        userRepository.getBaseMapper().search(page, request);
+        page.getRecords().forEach(u -> {
+            u.setStatusDesc(UserStatus.getDescByCode(u.getStatus()));
+            u.setPassword(null);
+        });
+        return SysPage.transform(page);
     }
-
 
     /**
      * 通过用户名查询用户
@@ -77,6 +78,22 @@ public class SysUserServiceImpl implements SysUserService {
         }
         return user;
     }
+
+    // ============================
+
+    /**
+     * 根据条件分页查询用户列表
+     *
+     * @param user 用户信息
+     * @return 用户信息集合信息
+     */
+    @Override
+    public List<SysUser> selectUserList(SysUser user) {
+        return userRepository.getBaseMapper().selectLists(user);
+    }
+
+
+
 
     /**
      * 通过用户ID查询用户

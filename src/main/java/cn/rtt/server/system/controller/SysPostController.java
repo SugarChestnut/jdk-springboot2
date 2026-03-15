@@ -24,10 +24,10 @@ public class SysPostController {
     /**
      * 获取当前登录用户菜单信息
      */
-    @RequestMapping("/list")
+    @RequestMapping("/search")
     @PreAuthorize("@ss.hasPermission('system:post:list')")
-    public Result<SysPage<SysPost>> treeSearch(@RequestBody PostSearchRequest request) {
-        return Result.success(postService.pageSearch(request));
+    public Result<SysPage<SysPost>> search(@RequestBody PostSearchRequest request) {
+        return Result.success(postService.search(request));
     }
 
     /**

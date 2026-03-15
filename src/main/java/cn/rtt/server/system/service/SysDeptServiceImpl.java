@@ -1,9 +1,11 @@
 package cn.rtt.server.system.service;
 
+import cn.rtt.server.system.constant.StatusEnum;
 import cn.rtt.server.system.dao.SysDeptRepository;
 import cn.rtt.server.system.domain.entity.SysDept;
 import cn.rtt.server.system.domain.request.dept.DeptSearchRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -25,10 +27,16 @@ public class SysDeptServiceImpl implements SysDeptService{
     private static final String ANCESTOR_SEPARATOR = ",";
 
     @Override
-    public List<SysDept> treeSearch(DeptSearchRequest request) {
-        LambdaQueryWrapper<SysDept> w = new LambdaQueryWrapper<>();
-        w.like(StringUtils.isNoneBlank(request.getDeptName()), SysDept::getDeptName, request.getDeptName());
-        return buildDeptTree(deptRepository.list(w));
+    public List<SysDept> search(DeptSearchRequest request) {
+        return buildDeptTree(deptRepository.getBaseMapper().search(request));
+    }
+
+    @Override
+    public List<SysDept> searchForSelect(DeptSearchRequest request) {
+        request.setStatus(StatusEnum.DELETED.getCode());
+        Page<SysDept> page = new Page<>(1, 10);
+        deptRepository.getBaseMapper().search(page, request);
+        return page.getRecords();
     }
 
     @Override
@@ -49,7 +57,7 @@ public class SysDeptServiceImpl implements SysDeptService{
         if (dept.getParentId() != null && dept.getParentId() != 0) {
             SysDept parentDept = deptRepository.getById(dept.getParentId());
             if (parentDept == null) throw new IllegalArgumentException("上级部门不存在");
-            if (parentDept.getStatus()) throw new IllegalArgumentException("上级部门已经停用");
+            if (StatusEnum.NORMAL.getCode() !=  parentDept.getStatus()) throw new IllegalArgumentException("上级部门已经停用");
             if (StringUtils.isBlank(parentDept.getAncestors())) {
                 dept.setAncestors(dept.getParentId().toString());
             } else {

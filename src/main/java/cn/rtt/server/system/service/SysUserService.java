@@ -5,6 +5,8 @@ import cn.rtt.server.system.domain.dto.ImageParam;
 import cn.rtt.server.system.domain.dto.UpdatePassword;
 import cn.rtt.server.system.domain.dto.UserBaseEdit;
 import cn.rtt.server.system.domain.entity.SysUser;
+import cn.rtt.server.system.domain.request.user.UserSearchRequest;
+import cn.rtt.server.system.domain.response.SysPage;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +25,18 @@ import java.util.Set;
  * @since 2024-07-17
  */
 public interface SysUserService {
+
+    SysPage<SysUser> search(UserSearchRequest request);
+
+    /**
+     * 通过用户名查询用户
+     *
+     * @param userName 用户名
+     * @return 用户对象信息
+     */
+    SysUser getUser(String userName);
+
+    // ======================
     /**
      * 根据条件分页查询用户列表
      *
@@ -33,13 +47,7 @@ public interface SysUserService {
     List<SysUser> selectUserList(SysUser user);
 
 
-    /**
-     * 通过用户名查询用户
-     *
-     * @param userName 用户名
-     * @return 用户对象信息
-     */
-    SysUser getUser(String userName);
+
 
     /**
      * 通过用户ID查询用户

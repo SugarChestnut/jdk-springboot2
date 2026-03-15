@@ -1,10 +1,10 @@
 package cn.rtt.server.system.controller;
 
+import cn.rtt.server.system.domain.request.role.AuthUserRequest;
 import cn.rtt.server.system.domain.request.role.RoleSearchRequest;
 import cn.rtt.server.system.domain.response.SysPage;
 import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.domain.entity.SysRole;
-import cn.rtt.server.system.domain.entity.SysUserRole;
 import cn.rtt.server.system.service.SysRoleService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 /**
- * 角色信息
- *
- * @author ruoyi
+ * 角色接口
  */
 @RestController
 @RequestMapping("/system/role")
@@ -27,9 +25,9 @@ public class SysRoleController {
     private final SysRoleService roleService;
 
     @PreAuthorize("@ss.hasPermission('system:role:list')")
-    @RequestMapping("/list")
-    public Result<SysPage<SysRole>> page(@RequestBody RoleSearchRequest request) {
-        return Result.success(roleService.pageSearch(request));
+    @RequestMapping("/search")
+    public Result<SysPage<SysRole>> search(@RequestBody RoleSearchRequest request) {
+        return Result.success(roleService.search(request));
     }
 
     @PreAuthorize("@ss.hasPermission('system:role:edit')")
@@ -87,43 +85,49 @@ public class SysRoleController {
     }
 
     /**
-     * 根据角色编号获取详细信息
+     * 授权用户
      */
-    @PreAuthorize("@ss.hasPermission('system:role:query')")
-    @GetMapping(value = "/{roleId}")
-    public Result getInfo(@PathVariable Long roleId) {
-        return Result.success(roleService.selectRoleById(roleId));
+    @PreAuthorize("@ss.hasPermission('system:role:auth')")
+    @RequestMapping("/auth")
+    public Result<?> addAuthUser(@RequestBody AuthUserRequest request) {
+        roleService.authUser(request);
+        return Result.success();
     }
-
-
-
-    /**
-     * 获取角色选择框列表
-     */
-    @PreAuthorize("@ss.hasPermission('system:role:query')")
-    @GetMapping("/optionselect")
-    public Result optionselect() {
-        return Result.success(roleService.selectRoleAll());
-    }
-
 
     /**
      * 取消授权用户
      */
-    @PreAuthorize("@ss.hasPermission('system:role:edit')")
-    @PostMapping("/authUser/cancel")
-    public Result cancelAuthUser(@RequestBody SysUserRole userRole) {
-        return Result.success(roleService.deleteAuthUser(userRole));
+    @PreAuthorize("@ss.hasPermission('system:role:auth')")
+    @RequestMapping("/unauth")
+    public Result<?> cancelAuthUser(@RequestBody AuthUserRequest request) {
+        roleService.unAuthUser(request);
+        return Result.success();
     }
 
-    /**
-     * 授权用户
-     */
-    @PreAuthorize("@ss.hasPermission('system:role:edit')")
-    @PostMapping("/authUser/add")
-    public Result addAuthUser(@RequestBody SysUserRole userRole) {
-        return Result.success(roleService.addAuthUser(userRole));
-    }
+
+//    /**
+//     * 根据角色编号获取详细信息
+//     */
+//    @PreAuthorize("@ss.hasPermission('system:role:query')")
+//    @GetMapping(value = "/{roleId}")
+//    public Result getInfo(@PathVariable Long roleId) {
+//        return Result.success(roleService.selectRoleById(roleId));
+//    }
+//
+//
+//
+//    /**
+//     * 获取角色选择框列表
+//     */
+//    @PreAuthorize("@ss.hasPermission('system:role:query')")
+//    @GetMapping("/optionselect")
+//    public Result optionselect() {
+//        return Result.success(roleService.selectRoleAll());
+//    }
+//
+//
+
+
 
 
 }

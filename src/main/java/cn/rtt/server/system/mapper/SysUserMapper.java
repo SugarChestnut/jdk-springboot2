@@ -1,6 +1,7 @@
 package cn.rtt.server.system.mapper;
 
 import cn.rtt.server.system.domain.entity.SysUser;
+import cn.rtt.server.system.domain.request.user.UserSearchRequest;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,13 +22,18 @@ import java.util.Map;
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
 
+    /**
+     * 登入
+     */
+    SysUser selectByUsername(String userName);
+
+    IPage<SysUser> search(@Param("page") IPage<SysUser> page, @Param("request") UserSearchRequest request);
+
     IPage<SysUser> selectPageData(@Param("page") IPage<SysUser> buildPage, @Param("user") SysUser user);
 
     List<SysUser> selectLists(@Param("user") SysUser user);
 
     SysUser selectUserById(Long userId);
-
-    SysUser selectByUsername(String userName);
 
     List<SysUser> selectUserByPhone(@Param("user") SysUser user);
 

@@ -25,7 +25,7 @@ public class SysPostServiceImpl implements SysPostService{
     private final SysPostRepository postRepository;
 
     @Override
-    public SysPage<SysPost> pageSearch(PostSearchRequest request) {
+    public SysPage<SysPost> search(PostSearchRequest request) {
         IPage<SysPost> page = new Page<>(request.getPageNum(), request.getPageSize());
         LambdaQueryWrapper<SysPost> w = new LambdaQueryWrapper<>();
         w.like(StringUtils.isNotBlank(request.getPostCode()), SysPost::getPostCode, request.getPostCode());
