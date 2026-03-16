@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,7 +26,7 @@ public class SysDeptServiceImpl implements SysDeptService{
 
     private final SysDeptRepository deptRepository;
 
-    private static final String ANCESTOR_SEPARATOR = ",";
+    private static final String COMMA_SEPARATOR = ",";
 
     @Override
     public List<SysDept> search(DeptSearchRequest request) {
@@ -61,7 +63,7 @@ public class SysDeptServiceImpl implements SysDeptService{
             if (StringUtils.isBlank(parentDept.getAncestors())) {
                 dept.setAncestors(dept.getParentId().toString());
             } else {
-                dept.setAncestors(parentDept.getAncestors() + ANCESTOR_SEPARATOR + dept.getParentId());
+                dept.setAncestors(parentDept.getAncestors() + COMMA_SEPARATOR + dept.getParentId());
             }
         } else {
             dept.setAncestors("");
@@ -88,6 +90,15 @@ public class SysDeptServiceImpl implements SysDeptService{
      * 构建菜单树
      */
     private List<SysDept> buildDeptTree(List<SysDept> depts) {
+        for (SysDept dept : depts) {
+            if (StringUtils.isBlank(dept.getRoleIds())) {
+                dept.setRoleArray(new ArrayList<>());
+            } else {
+                String[] split = dept.getRoleIds().split(COMMA_SEPARATOR);
+                List<Long> collect = Arrays.stream(split).map(Long::valueOf).collect(Collectors.toList());
+                dept.setRoleArray(collect);
+            }
+        }
         List<SysDept> topDept = depts.stream()
                 .filter(dept -> dept.getParentId() == null || dept.getParentId() == 0)
                 .collect(Collectors.toList());

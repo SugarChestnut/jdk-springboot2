@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -56,9 +58,14 @@ public class SysDept extends BaseEntity{
     /** 备注 */
     private String remark;
 
+    @JsonIgnore
+    private String roleIds;
+
     @TableField(exist = false)
     private List<SysDept> children = new ArrayList<>();
 
     @TableField(exist = false)
     private String leader;
+
+    private List<Long> roleArray;
 }

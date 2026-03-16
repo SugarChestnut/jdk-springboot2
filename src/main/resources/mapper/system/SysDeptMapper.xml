@@ -14,6 +14,7 @@
         <result property="status" column="status"/>
         <result property="remark" column="remark"/>
         <result property="leader" column="leader"/>
+        <result property="roleIds" column="role_ids"/>
         <result property="gmtCreate" column="gmt_create"/>
         <result property="gmtModified" column="gmt_modified"/>
     </resultMap>
@@ -30,6 +31,7 @@
         t1.email,
         t1.status,
         t1.remark,
+        t1.role_ids,
         t1.gmt_create,
         t1.gmt_modified,
         t2.username as leader
