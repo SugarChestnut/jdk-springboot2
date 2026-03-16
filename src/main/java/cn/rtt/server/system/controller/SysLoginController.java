@@ -42,7 +42,7 @@ public class SysLoginController {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         Map<String, Object> data = new HashMap<>();
         data.put("user", loginUser.getUser());
-        data.put("roles", loginUser.getUser().getRoles().stream().map(SysRole::getRoleKey).collect(Collectors.toList()));
+        data.put("roles", loginUser.getUser().getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
         data.put("permissions", loginUser.getPermissions());
         data.put("isDefaultModifyPwd", false);
         data.put("isPasswordExpired", false);

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @AllArgsConstructor
-public class SysDeptServiceImpl implements SysDeptService{
+public class SysDeptServiceImpl implements SysDeptService {
 
     private final SysDeptRepository deptRepository;
 
@@ -48,9 +49,11 @@ public class SysDeptServiceImpl implements SysDeptService{
     }
 
     @Override
+    @Transactional
     public void updateDept(SysDept dept) {
         if (dept.getDeptId() == null) throw new IllegalArgumentException("未指定部门");
         checkDept(dept);
+        // TODO 更新员工权限缓存
         deptRepository.updateById(dept);
     }
 
@@ -59,7 +62,8 @@ public class SysDeptServiceImpl implements SysDeptService{
         if (dept.getParentId() != null && dept.getParentId() != 0) {
             SysDept parentDept = deptRepository.getById(dept.getParentId());
             if (parentDept == null) throw new IllegalArgumentException("上级部门不存在");
-            if (StatusEnum.NORMAL.getCode() !=  parentDept.getStatus()) throw new IllegalArgumentException("上级部门已经停用");
+            if (StatusEnum.NORMAL.getCode() != parentDept.getStatus())
+                throw new IllegalArgumentException("上级部门已经停用");
             if (StringUtils.isBlank(parentDept.getAncestors())) {
                 dept.setAncestors(dept.getParentId().toString());
             } else {
@@ -74,10 +78,16 @@ public class SysDeptServiceImpl implements SysDeptService{
         if (dept.getDeptId() != null) {
             List<SysDept> list = deptRepository.list(w1);
             for (SysDept d : list) {
-                if (!Objects.equals(d.getDeptId(), dept.getDeptId())) throw new IllegalArgumentException("部门名称已存在");
+                if (!Objects.equals(d.getDeptId(), dept.getDeptId()))
+                    throw new IllegalArgumentException("部门名称已存在");
             }
         } else {
             if (deptRepository.count(w1) > 0) throw new IllegalArgumentException("部门名称已存在");
+        }
+        if (dept.getRoleArray() != null && !dept.getRoleArray().isEmpty()) {
+            dept.setRoleIds(dept.getRoleArray().stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(COMMA_SEPARATOR)));
         }
     }
 

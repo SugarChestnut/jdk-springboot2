@@ -12,7 +12,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -142,12 +140,6 @@ public class TokenService {
     private String createToken(Map<String, Object> claims) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(systemConfig.getToken().getSecret()));
         return Jwts.builder().claims(claims).signWith(key).compact();
-    }
-
-    public static void main(String[] args) {
-        SecretKey key = Jwts.SIG.HS512.key().build();
-        String secret = Encoders.BASE64.encode(key.getEncoded());
-        System.out.println(secret);
     }
 
     /**
