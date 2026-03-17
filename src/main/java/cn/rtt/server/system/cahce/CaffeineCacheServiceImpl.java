@@ -21,7 +21,7 @@ public class CaffeineCacheServiceImpl implements CacheService {
     private final Cache<String, Object> cache5Minutes = Caffeine.newBuilder()
             .expireAfterAccess(5, TimeUnit.MINUTES)
             .initialCapacity(10)
-            .maximumSize(1000)
+            .maximumSize(10000)
             .removalListener(new RemovalListenerImpl())
             .build();
 
