@@ -16,16 +16,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-/**
- * <p>
- * 服务类
- * </p>
- *
- * @author author
- * @since 2024-07-17
- */
 public interface SysUserService {
 
+    /**
+     * 用户搜索
+     */
     SysPage<SysUser> search(UserSearchRequest request);
 
     /**
@@ -36,6 +31,10 @@ public interface SysUserService {
      */
     SysUser getUser(String userName);
 
+    /**
+     * 更新用户登录IP
+     */
+    void updateLoginIp(Long userId, String ip);
     // ======================
     /**
      * 根据条件分页查询用户列表

@@ -1,115 +1,77 @@
 {
   "groups": [
     {
-      "name": "system.config",
-      "type": "cn.rtt.server.system.config.SystemConfigProperties",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties"
+      "name": "system.auth",
+      "type": "cn.rtt.server.system.config.SystemAuthProperties",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties"
     },
     {
-      "name": "system.config.token",
-      "type": "cn.rtt.server.system.config.SystemConfigProperties$TokenConfig",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties",
-      "sourceMethod": "getToken()"
+      "name": "system.auth.jwt",
+      "type": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties",
+      "sourceMethod": "getJwt()"
     },
     {
-      "name": "system.config.login",
-      "type": "cn.rtt.server.system.config.SystemConfigProperties$LoginConfig",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties",
+      "name": "system.auth.login",
+      "type": "cn.rtt.server.system.config.SystemAuthProperties$LoginConfig",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties",
       "sourceMethod": "getLogin()"
     }
   ],
   "properties": [
     {
-      "name": "system.config.token.secret",
+      "name": "system.auth.jwt.secret",
       "type": "java.lang.String",
-      "description": "Token加密密钥",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties$TokenConfig",
-      "defaultValue": "abcdefghijklmnopqrstuvwxyz"
+      "description": "JWT secret key",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig"
     },
     {
-      "name": "system.config.token.header",
+      "name": "system.auth.jwt.private-key",
       "type": "java.lang.String",
-      "description": "Token在HTTP请求头中的字段名",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties$TokenConfig",
+      "description": "Private key for JWT",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig"
+    },
+    {
+      "name": "system.auth.jwt.public-key",
+      "type": "java.lang.String",
+      "description": "Public key for JWT",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig"
+    },
+    {
+      "name": "system.auth.jwt.header",
+      "type": "java.lang.String",
+      "description": "JWT header name",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
       "defaultValue": "Authorization"
     },
     {
-      "name": "system.config.token.expire-time",
-      "type": "java.lang.Integer",
-      "description": "Token过期时间（分钟）",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties$TokenConfig",
-      "defaultValue": 60
+      "name": "system.auth.jwt.access-token-ttl",
+      "type": "java.time.Duration",
+      "description": "Access token expiration time (e.g., 15s, 30m, 1h)",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
+      "defaultValue": "15s"
     },
     {
-      "name": "system.config.login.max-retry-count",
+      "name": "system.auth.jwt.refresh-token-ttl",
+      "type": "java.time.Duration",
+      "description": "Refresh token expiration time (e.g., 7d, 30d, 1h)",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
+      "defaultValue": "7d"
+    },
+    {
+      "name": "system.auth.login.max-retry-count",
       "type": "java.lang.Integer",
-      "description": "最大登录重试次数",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties$LoginConfig",
+      "description": "Maximum number of login retry attempts",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$LoginConfig",
       "defaultValue": 5
     },
     {
-      "name": "system.config.login.lock-time",
-      "type": "java.lang.Integer",
-      "description": "账户锁定时间（秒）",
-      "sourceType": "cn.rtt.server.system.config.SystemConfigProperties$LoginConfig",
-      "defaultValue": 300
+      "name": "system.auth.login.lock-time",
+      "type": "java.time.Duration",
+      "description": "Account lock time (e.g., 5m, 10m, 1h)",
+      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$LoginConfig",
+      "defaultValue": "5m"
     }
   ],
-  "hints": [
-    {
-      "name": "system.config.token.expire-time",
-      "values": [
-        {
-          "value": 30,
-          "description": "短时间会话（30分钟）"
-        },
-        {
-          "value": 60,
-          "description": "标准会话（60分钟）"
-        },
-        {
-          "value": 120,
-          "description": "长时间会话（2小时）"
-        },
-        {
-          "value": 1440,
-          "description": "全天会话（24小时）"
-        }
-      ]
-    },
-    {
-      "name": "system.config.login.max-retry-count",
-      "values": [
-        {
-          "value": 3,
-          "description": "低安全级别（3次）"
-        },
-        {
-          "value": 5,
-          "description": "标准安全级别（5次）"
-        },
-        {
-          "value": 10,
-          "description": "高安全级别（10次）"
-        }
-      ]
-    },
-    {
-      "name": "system.config.login.lock-time",
-      "values": [
-        {
-          "value": 60,
-          "description": "短时间锁定（1分钟）"
-        },
-        {
-          "value": 300,
-          "description": "标准锁定（5分钟）"
-        },
-        {
-          "value": 1800,
-          "description": "长时间锁定（30分钟）"
-        }
-      ]
-    }
-  ]
+  "hints": []
 }

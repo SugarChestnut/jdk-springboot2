@@ -14,6 +14,7 @@ import cn.rtt.server.system.domain.request.user.UserSearchRequest;
 import cn.rtt.server.system.domain.response.SysPage;
 import cn.rtt.server.system.exception.SystemException;
 import cn.rtt.server.system.utils.CollectionUtils;
+import cn.rtt.server.system.utils.IpUtils;
 import cn.rtt.server.system.utils.SecurityUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -72,11 +73,15 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public SysUser getUser(String userName) {
-        SysUser user = userRepository.getBaseMapper().selectByUsername(userName);
-        if (user == null) {
-            throw new SystemException("用户不存在或者未启用");
-        }
-        return user;
+        return userRepository.getBaseMapper().selectByUsername(userName);
+    }
+
+    @Override
+    public void updateLoginIp(Long userId, String ip) {
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(userId);
+        sysUser.setLoginIp(ip);
+        userRepository.updateById(sysUser);
     }
 
     // ============================
@@ -116,7 +121,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public boolean checkUserNameUnique(SysUser user) {
         Long userId = user.getUserId() == null ? -1L : user.getUserId();
-        SysUser exist = getUser(user.getUsername());
+        SysUser exist = userRepository.getBaseMapper().selectByUsername(user.getUsername());
         if (exist != null) return false;
         Boolean b = checkAllMobile(userId, user.getMobile());
         if (exist.getUserId().longValue() != userId.longValue() || !b) {

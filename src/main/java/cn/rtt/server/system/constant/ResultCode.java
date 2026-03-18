@@ -29,7 +29,7 @@ public enum ResultCode {
     UN_LOGIN(110, "未登录，请进行登录!"),
     UN_AUTH(111, "未授权访问!"),
     TOKEN_INVALID_OR_EXPIRED(112, "认证信息无效或已过期!"),
-    USER_PASSWORD_LOG_ERROR(117, "用户名密码错误达到最大次数！请5分钟后重试!"),
+    USER_PASSWORD_LOG_ERROR(117, "登录失败次数过多！请5分钟后重试!"),
     ;
 
     /**

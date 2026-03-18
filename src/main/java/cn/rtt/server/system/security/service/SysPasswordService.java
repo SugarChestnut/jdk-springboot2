@@ -1,7 +1,7 @@
 package cn.rtt.server.system.security.service;
 
 import cn.rtt.server.system.cahce.CacheService;
-import cn.rtt.server.system.config.SystemConfigProperties;
+import cn.rtt.server.system.config.SystemAuthProperties;
 import cn.rtt.server.system.constant.CacheConstants;
 import cn.rtt.server.system.constant.ResultCode;
 import cn.rtt.server.system.domain.entity.SysUser;
@@ -25,7 +25,7 @@ public class SysPasswordService {
 
     private final CacheService cacheService;
 
-    private final SystemConfigProperties systemConfigProperties;
+    private final SystemAuthProperties systemConfigProperties;
 
     private final PasswordEncoder passwordEncoder;
 

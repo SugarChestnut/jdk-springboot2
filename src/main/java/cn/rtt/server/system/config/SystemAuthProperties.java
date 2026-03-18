@@ -4,26 +4,31 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Component
-@ConfigurationProperties(prefix = "system.config")
-@Data
-public class SystemConfigProperties {
+import java.time.Duration;
 
-    private TokenConfig token = new TokenConfig();
+@Component
+@ConfigurationProperties(prefix = "system.auth")
+@Data
+public class SystemAuthProperties {
+
+    private JwtConfig jwt = new JwtConfig();
     private LoginConfig login = new LoginConfig();
 
     // Token Configuration Inner Class
     @Data
-    public static class TokenConfig {
-        private String secret = "abcdefghijklmnopqrstuvwxyz";
+    public static class JwtConfig {
+        private String secret;
+        private String privateKey;
+        private String publicKey;
         private String header = "Authorization";
-        private int expireTime = 60;
+        private Duration accessTokenTtl = Duration.ofMillis(15);
+        private Duration  refreshTokenTtl = Duration.ofDays(7);
     }
 
     // Login Configuration Inner Class
     @Data
     public static class LoginConfig {
         private int maxRetryCount = 5;
-        private int lockTime = 300;
+        private Duration lockTime = Duration.ofMinutes(5);
     }
 }

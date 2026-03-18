@@ -1,7 +1,7 @@
 package cn.rtt.server.system.security;
 
 import cn.rtt.server.system.cahce.CacheService;
-import cn.rtt.server.system.config.SystemConfigProperties;
+import cn.rtt.server.system.config.SystemAuthProperties;
 import cn.rtt.server.system.constant.CacheConstants;
 import cn.rtt.server.system.constant.Constants;
 import cn.rtt.server.system.domain.LoginUser;
@@ -39,7 +39,7 @@ public class TokenService {
 
     private final CacheService cacheService;
 
-    private final SystemConfigProperties systemConfig;
+    private final SystemAuthProperties systemConfig;
 
     /**
      * 获取用户身份信息

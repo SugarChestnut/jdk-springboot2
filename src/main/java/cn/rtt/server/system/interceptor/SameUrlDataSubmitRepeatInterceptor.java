@@ -3,7 +3,7 @@ package cn.rtt.server.system.interceptor;
 
 import cn.rtt.server.system.annotation.RepeatSubmit;
 import cn.rtt.server.system.cahce.CacheService;
-import cn.rtt.server.system.config.SystemConfigProperties;
+import cn.rtt.server.system.config.SystemAuthProperties;
 import cn.rtt.server.system.constant.CacheConstants;
 import cn.rtt.server.system.utils.HttpHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,7 +30,7 @@ public class SameUrlDataSubmitRepeatInterceptor extends RepeatInterceptor {
 
     public static final String REPEAT_TIME = "repeatTime";
 
-    private final SystemConfigProperties systemConfig;
+    private final SystemAuthProperties systemConfig;
 
     private final CacheService cacheService;
 

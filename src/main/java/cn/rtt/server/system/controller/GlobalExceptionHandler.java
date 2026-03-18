@@ -22,10 +22,7 @@ public class GlobalExceptionHandler {
         return Result.error(code, e.getMessage());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public Result<?> accessDeniedException(AccessDeniedException e) {
-        return Result.error(ResultCode.UN_AUTH);
-    }
+
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public Result<?> missingServletRequestParameterException(Exception e) {

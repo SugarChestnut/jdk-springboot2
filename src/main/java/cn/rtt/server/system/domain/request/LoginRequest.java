@@ -34,6 +34,6 @@ public class LoginRequest
     /**
      * 滑动验证
      */
-    private Double slideOffset;
+    private Long slideOffset;
 
 }

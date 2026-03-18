@@ -40,13 +40,12 @@ logging:
         root: info
 
 system:
-    config:
-        token:
+    auth:
+        jwt:
             secret: BIrAQfMb1dqS4yCmYJm0ssdw+mn9Ipb3usR6iDnD86eeH5krUTgzxpzFwYd56uxe7vQPEsRUi2V3MYuTpBH45g==
             header: Authorization
-            expireTime: 60
+            accessTokenTtl: PT15M
+            refreshTokenTtl: P7D
         login:
             maxRetryCount: 5
-            lockTime: 300
-
-caff
+            lockTime: PT5M
