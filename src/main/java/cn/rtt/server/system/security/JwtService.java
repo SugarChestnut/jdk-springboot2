@@ -47,6 +47,7 @@ public class JwtService {
                 .issuer(issuer)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(authProperties.getJwt().getAccessTokenTtl())))
+                .claim("token_type", "access")
                 .signWith(key)
                 .compact();
 
@@ -57,15 +58,13 @@ public class JwtService {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(authProperties.getJwt().getRefreshTokenTtl())))
                 .id(refreshTokenId)
+                .claim("token_type", "refresh")
                 .signWith(key)
                 .compact();
 
         return TokenPair.builder()
                 .accessToken(accessToken)
-                .accessTokenExpiresAt(now.plus(authProperties.getJwt().getAccessTokenTtl()))
                 .refreshToken(refreshToken)
-                .refreshTokenExpiresAt(now.plus(authProperties.getJwt().getRefreshTokenTtl()))
-                .refreshTokenId(refreshTokenId)
                 .build();
     }
 

@@ -98,7 +98,7 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 // 基于token，所以不需要session
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // 注解标记允许匿名访问的url
+                // 注解标记允许匿名访问的url, 实际是在添加 AuthorizationFilter，过滤请求
                 .authorizeHttpRequests((requests) -> {
                     permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
                     // 对于登录login 注册register 验证码captchaImage 允许匿名访问
@@ -116,11 +116,9 @@ public class SecurityConfig {
                             // 除上面外的所有请求全部需要鉴权认证
                             .anyRequest().authenticated();
                 })
-
-
                 // 添加Logout filter
                 .logout(logout -> logout.logoutUrl("/**/logout").logoutSuccessHandler(logoutSuccessHandler))
-                // 添加JWT filter
+                // 添加JWT filter，在 SessionCreationPolicy.STATELESS 需要手动将 Authentication 置到上下文，同时用户路径
                 .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 // 添加CORS filter
                 .addFilterBefore(corsFilter, JwtWebAuthenticationTokenFilter.class)
