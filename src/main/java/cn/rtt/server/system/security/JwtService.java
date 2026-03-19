@@ -21,6 +21,9 @@ import java.util.stream.Collectors;
  */
 @Service
 public class JwtService {
+    private String final String TOKEN_TYPE = "token_type";
+    private static final String TOKEN_TYPE_ACCESS = "access";
+    private static final String TOKEN_TYPE_REFRESH = "refresh";
 
     @Value("${spring.application.name}")
     private String issuer;
@@ -47,7 +50,7 @@ public class JwtService {
                 .issuer(issuer)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(authProperties.getJwt().getAccessTokenTtl())))
-                .claim("token_type", "access")
+                .claim(TOKEN_TYPE, TOKEN_TYPE_ACCESS)
                 .signWith(key)
                 .compact();
 
@@ -58,7 +61,7 @@ public class JwtService {
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(authProperties.getJwt().getRefreshTokenTtl())))
                 .id(refreshTokenId)
-                .claim("token_type", "refresh")
+                .claim(TOKEN_TYPE, TOKEN_TYPE_REFRESH)
                 .signWith(key)
                 .compact();
 

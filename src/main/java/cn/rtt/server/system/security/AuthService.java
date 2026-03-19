@@ -58,7 +58,6 @@ public class AuthService {
         loginUser.setSuperAdmin(RoleEnum.isSuperAdmin(loginUser.getUser().getRoles()));
         loginUser.setAdmin(RoleEnum.isAdmin(loginUser.getUser().getRoles()));
         userService.updateLoginIp(loginUser.getUserId(), IpUtils.getIpAddr());
-
         // 生成token
         return jwtService.issueTokenPair(loginUser);
     }

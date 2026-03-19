@@ -49,3 +49,8 @@ system:
         login:
             maxRetryCount: 5
             lockTime: PT5M
+    cache:
+        type: caffeine
+        caffeine:
+            token-access:
+            token-refresh:

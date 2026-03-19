@@ -1,39 +1,26 @@
 package cn.rtt.server.system.constant;
 
+import lombok.Getter;
+
+import java.time.Duration;
+
 /**
  * 缓存的key 常量
- *
- * @author ruoyi
  */
+@Getter
 public enum CacheConstants {
 
-    LOGIN_TOKEN("login_tokens:", )
+    USER_TOKEN_ACCESS("user_token_access:", Duration.ofMinutes(15)),
+    USER_TOKEN_REFRESH("user_token_refresh:", Duration.ofDays(7)),
+    REPEAT_SUBMIT_KEY("repeat_submit:", Duration.ofSeconds(5)),
+    PWD_ERR_CNT_KEY("pwd_err_cnt:", Duration.ofMinutes(5)),
+    CAPTCHA_CODE_KEY("captcha_code:", Duration.ofMinutes(5)),
+    ;
+    final String prefix;
+    final Duration duration;
 
-    private String prefix;
-    private Long nanos;
-    /**
-     * 登录用户 redis key
-     */
-    public static final String LOGIN_TOKEN_KEY = "login_tokens:";
-
-    /**
-     * 验证码 redis key
-     */
-    public static final String CAPTCHA_CODE_KEY = "captcha_codes:";
-
-
-    /**
-     * 防重提交 redis key
-     */
-    public static final String REPEAT_SUBMIT_KEY = "repeat_submit:";
-
-    /**
-     * 登录账户密码错误次数 redis key
-     */
-    public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
-
-
-    public static final String USER_CHANGE_PHONE_KEY = "user_change_phone_key:";
-
-
+    CacheConstants(String prefix, Duration duration) {
+        this.prefix = prefix;
+        this.duration = duration;
+    }
 }

@@ -1,13 +1,11 @@
 package cn.rtt.server.system.cahce;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.github.benmanes.caffeine.cache.RemovalListener;
+import com.github.benmanes.caffeine.cache.*;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -16,45 +14,42 @@ import java.util.concurrent.TimeUnit;
  * @date 2026/1/14 13:51
  */
 @Service
-public class CaffeineCacheServiceImpl implements CacheService {
+public class CaffeineCacheServiceImpl extends AbstractCacheService {
 
-    private final Cache<String, Object> cache5Minutes = Caffeine.newBuilder()
-            .expireAfterAccess(5, TimeUnit.MINUTES)
-            .initialCapacity(10)
-            .maximumSize(10000)
-            .removalListener(new RemovalListenerImpl())
+    private final Cache<String, CacheWrapper> cache = Caffeine.newBuilder()
+            .expireAfter(new Expiry<String, CacheWrapper>() {
+
+                @Override
+                public long expireAfterCreate(String key, CacheWrapper value, long currentTime) {
+                    return value.getDuration().toNanos();
+                }
+
+                @Override
+                public long expireAfterUpdate(String key, CacheWrapper value, long currentTime, long currentDuration) {
+                    return currentDuration;
+                }
+
+                @Override
+                public long expireAfterRead(String key, CacheWrapper value, long currentTime, long currentDuration) {
+                    return currentDuration;
+                }
+            })
             .build();
-
-    private final Cache<String, Object> cache1Hour = Caffeine.newBuilder()
-            .expireAfterAccess(1, TimeUnit.HOURS)
-            .initialCapacity(10)
-            .maximumSize(10000)
-            .removalListener(new RemovalListenerImpl())
-            .build();
-
-    private final Cache<String, Object> cacheNoExpire = Caffeine.newBuilder()
-            .initialCapacity(10)
-            .maximumSize(200)
-            .build();
-
-    public final ConcurrentHashMap<String, Cache<String, Object>> redirectCache = new ConcurrentHashMap<>();
 
     @Override
     public Object get(String key) {
+        Duration duration = getDuration(key);
+        cache.
+
         if (redirectCache.containsKey(key)) {
             return redirectCache.get(key).getIfPresent(key);
         }
         return null;
     }
 
-    @Override
-    public void put(String key, Object value) {
-        redirectCache.put(key, cacheNoExpire);
-        cacheNoExpire.put(key, value);
-    }
 
     @Override
-    public void expire(String key, Object value, int seconds) {
+    public void expire(String key, Object value, Duration duration) {
         if (seconds <= 300) {
             redirectCache.put(key, cache5Minutes);
             cache5Minutes.put(key, value);

@@ -63,15 +63,6 @@ public class TokenService {
     }
 
     /**
-     * 设置用户身份信息
-     */
-    public void setLoginUser(LoginUser loginUser) {
-        if (loginUser != null && StringUtils.isNotEmpty(loginUser.getToken())) {
-            refreshToken(loginUser);
-        }
-    }
-
-    /**
      * 删除用户身份信息
      */
     public void delLoginUser(String token) {
@@ -152,17 +143,6 @@ public class TokenService {
         SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(systemConfig.getToken().getSecret()));
         JwtParser parser = Jwts.parser().verifyWith(secretKey).build();
         return parser.parseSignedClaims(token).getPayload();
-    }
-
-    /**
-     * 从令牌中获取用户名
-     *
-     * @param token 令牌
-     * @return 用户名
-     */
-    public String getUsernameFromToken(String token) {
-        Claims claims = parseToken(token);
-        return claims.getSubject();
     }
 
     /**
