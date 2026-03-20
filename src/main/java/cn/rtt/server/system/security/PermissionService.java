@@ -1,4 +1,4 @@
-package cn.rtt.server.system.security.service;
+package cn.rtt.server.system.security;
 
 
 

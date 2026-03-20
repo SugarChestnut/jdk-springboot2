@@ -1,5 +1,7 @@
 package cn.rtt.server.system.cahce;
 
+import cn.rtt.server.system.constant.CacheMetaEnum;
+
 import java.time.Duration;
 
 /**
@@ -10,7 +12,15 @@ public interface CacheService {
 
     Object get(String key);
 
-    void expire(String key, Object value, Duration duration);
+    void put(String key, Object value, Duration duration);
 
-    void invalid(String key);
+    void invalidate(String key);
+
+    Object get(CacheMetaEnum c, Object k);
+
+    void put(CacheMetaEnum c, Object k, Object value);
+
+    void invalidate(CacheMetaEnum c, Object k);
+
+    void invalidateAll();
 }

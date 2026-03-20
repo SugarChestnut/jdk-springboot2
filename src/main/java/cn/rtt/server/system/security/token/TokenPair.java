@@ -1,4 +1,4 @@
-package cn.rtt.server.system.security;
+package cn.rtt.server.system.security.token;
 
 import lombok.Builder;
 import lombok.Data;

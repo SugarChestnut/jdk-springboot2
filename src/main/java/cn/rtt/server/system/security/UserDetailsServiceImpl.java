@@ -1,4 +1,4 @@
-package cn.rtt.server.system.security.service;
+package cn.rtt.server.system.security;
 
 import cn.rtt.server.system.constant.UserStatus;
 import cn.rtt.server.system.domain.LoginUser;
@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         SysUser user = userService.getUser(username);
         if (user == null || UserStatus.OK.getCode() != user.getStatus()) {
-            throw new UsernameNotFoundException("用户不存在");
+            throw new UsernameNotFoundException("用户不存在或被停用");
         }
         return createLoginUser(user);
     }

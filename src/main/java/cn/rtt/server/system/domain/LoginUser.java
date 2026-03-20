@@ -29,19 +29,19 @@ public class LoginUser implements UserDetails {
     private Long userId;
 
     /**
-     * 用户唯一标识
+     * 短期token
      */
-    private String token;
+    private String accessTokenId;
+
+    /**
+     * 长期token
+     */
+    private String refreshTokenId;
 
     /**
      * 登录时间
      */
     private LocalDateTime loginTime;
-
-    /**
-     * 过期时间
-     */
-    private LocalDateTime expireTime;
 
     /**
      * 登录IP地址

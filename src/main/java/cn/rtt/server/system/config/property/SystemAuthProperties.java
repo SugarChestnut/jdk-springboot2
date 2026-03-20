@@ -1,4 +1,4 @@
-package cn.rtt.server.system.config;
+package cn.rtt.server.system.config.property;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

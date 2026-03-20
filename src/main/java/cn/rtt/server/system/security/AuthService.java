@@ -7,6 +7,8 @@ import cn.rtt.server.system.domain.LoginUser;
 import cn.rtt.server.system.domain.request.LoginRequest;
 import cn.rtt.server.system.exception.AuthException;
 import cn.rtt.server.system.security.context.AuthenticationContextHolder;
+import cn.rtt.server.system.security.token.JwtService;
+import cn.rtt.server.system.security.token.TokenPair;
 import cn.rtt.server.system.service.SysMenuService;
 import cn.rtt.server.system.service.SysUserService;
 import cn.rtt.server.system.utils.IpUtils;
@@ -15,11 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Set;
 
 /**
@@ -42,23 +41,17 @@ public class AuthService {
         // 登录前置校验
         loginPreCheck(body);
         // 用户验证
-        Authentication authentication;
-        try {
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword());
-            AuthenticationContextHolder.setContext(authenticationToken);
-            authentication = authenticationManager.authenticate(authenticationToken);
-        } finally {
-            AuthenticationContextHolder.clearContext();
-        }
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword());
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+
         Set<String> permission = menuService.getPermission(loginUser.getUserId());
         if (loginUser.getSuperAdmin()) permission.add(Permission.SUPER_ADMIN);
         loginUser.setPermissions(permission);
         loginUser.setSuperAdmin(RoleEnum.isSuperAdmin(loginUser.getUser().getRoles()));
         loginUser.setAdmin(RoleEnum.isAdmin(loginUser.getUser().getRoles()));
         userService.updateLoginIp(loginUser.getUserId(), IpUtils.getIpAddr());
-        // 生成token
         return jwtService.issueTokenPair(loginUser);
     }
 

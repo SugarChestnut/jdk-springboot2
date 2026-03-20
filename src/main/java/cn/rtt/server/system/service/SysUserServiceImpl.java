@@ -14,7 +14,6 @@ import cn.rtt.server.system.domain.request.user.UserSearchRequest;
 import cn.rtt.server.system.domain.response.SysPage;
 import cn.rtt.server.system.exception.SystemException;
 import cn.rtt.server.system.utils.CollectionUtils;
-import cn.rtt.server.system.utils.IpUtils;
 import cn.rtt.server.system.utils.SecurityUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -355,7 +354,7 @@ public class SysUserServiceImpl implements SysUserService {
         }
         if (!Strings.CS.equals(userBaseEdit.getMobile(), oldMobile) && StringUtils.isNotEmpty(oldMobile)) {
 
-            String code = (String) cacheService.get(CacheConstants.USER_CHANGE_PHONE_KEY + userBaseEdit.getUuid());
+            String code = (String) cacheService.get(CacheMetaEnum.USER_CHANGE_PHONE_KEY + userBaseEdit.getUuid());
             if (!Strings.CS.equals(code, userBaseEdit.getCode())) {
                 throw new SystemException("验证码错误!");
             }

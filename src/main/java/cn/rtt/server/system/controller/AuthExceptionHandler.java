@@ -4,6 +4,7 @@ import cn.rtt.server.system.constant.ResultCode;
 import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.exception.AuthException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,5 +31,10 @@ public class AuthExceptionHandler {
     @ExceptionHandler(AuthException.class)
     public Result<?> authException(AuthException e) {
         return Result.error(e.getResultCode());
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public Result<?> badCredentialsException(BadCredentialsException e) {
+        return Result.error(ResultCode.LOGIN_ERROR);
     }
 }

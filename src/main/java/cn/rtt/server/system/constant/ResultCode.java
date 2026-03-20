@@ -19,17 +19,17 @@ public enum ResultCode {
     INTERNAL_SERVER_ERROR(500, "服务器内部错误!"),
     SERVER_BUSY(503, "服务器正忙，请稍后再试!"),
 
-    // 登录、权限、认证相关
+    // 登录
     LOGIN_ERROR(101, "用户名或者密码错误!"),
     USER_STOP(102, "用户已停用!"),
     USER_NULL(103, "用户不存在!"),
     CODE_ERROR(104, "验证码错误!"),
-    PHONE_USED(107, "手机号已被绑定!"),
-    USER_ALREADY(108, "用户已存在!"),
+    USER_PASSWORD_LOG_ERROR(105, "登录失败次数过多！请5分钟后重试!"),
+    // 访问
     UN_LOGIN(110, "未登录，请进行登录!"),
     UN_AUTH(111, "未授权访问!"),
     TOKEN_INVALID_OR_EXPIRED(112, "认证信息无效或已过期!"),
-    USER_PASSWORD_LOG_ERROR(117, "登录失败次数过多！请5分钟后重试!"),
+    TOKEN_INVALID_NEED_REFRESH(113, "刷新Token"),
     ;
 
     /**

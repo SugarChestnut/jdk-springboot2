@@ -3,8 +3,8 @@ package cn.rtt.server.system.interceptor;
 
 import cn.rtt.server.system.annotation.RepeatSubmit;
 import cn.rtt.server.system.cahce.CacheService;
-import cn.rtt.server.system.config.SystemAuthProperties;
-import cn.rtt.server.system.constant.CacheConstants;
+import cn.rtt.server.system.config.property.SystemAuthProperties;
+import cn.rtt.server.system.constant.CacheMetaEnum;
 import cn.rtt.server.system.utils.HttpHelper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,7 +60,7 @@ public class SameUrlDataSubmitRepeatInterceptor extends RepeatInterceptor {
         String submitKey = StringUtils.trimToEmpty(request.getHeader(systemConfig.getToken().getHeader()));
 
         // 唯一标识（指定key + url + 消息头）
-        String cacheRepeatKey = CacheConstants.REPEAT_SUBMIT_KEY + url + submitKey;
+        String cacheRepeatKey = CacheMetaEnum.REPEAT_SUBMIT_KEY + url + submitKey;
 
         Object sessionObj = cacheService.get(cacheRepeatKey);
         if (sessionObj != null) {

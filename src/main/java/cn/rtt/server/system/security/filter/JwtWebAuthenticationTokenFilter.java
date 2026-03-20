@@ -2,7 +2,7 @@ package cn.rtt.server.system.security.filter;
 
 
 import cn.rtt.server.system.domain.LoginUser;
-import cn.rtt.server.system.security.TokenService;
+import cn.rtt.server.system.security.token.TokenService;
 import cn.rtt.server.system.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

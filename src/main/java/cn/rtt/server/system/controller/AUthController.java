@@ -4,8 +4,8 @@ import cn.rtt.server.system.domain.LoginUser;
 import cn.rtt.server.system.domain.request.LoginRequest;
 import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.domain.entity.SysRole;
-import cn.rtt.server.system.security.TokenPair;
-import cn.rtt.server.system.security.service.SysLoginService;
+import cn.rtt.server.system.security.AuthService;
+import cn.rtt.server.system.security.token.TokenPair;
 import cn.rtt.server.system.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -23,23 +23,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/auth")
 public class AUthController {
 
-    private final SysLoginService loginService;
+    private final AuthService authService;
 
     /**
      * 登录
      */
     @RequestMapping("/login")
     public Result<TokenPair> login(HttpServletRequest request, @RequestBody LoginRequest body) {
-        String token = loginService.login(request.getUsername(),
-                request.getPassword(),
-                request.getCode(),
-                request.getUuid());
-        return Result.success(token);
+        return Result.success(authService.login(body));
     }
 
     @RequestMapping("/logout")
     public Result<?> logout() {
-
         return Result.success();
     }
 

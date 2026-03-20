@@ -1,77 +1,245 @@
 {
-  "groups": [
-    {
-      "name": "system.auth",
-      "type": "cn.rtt.server.system.config.SystemAuthProperties",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties"
-    },
-    {
-      "name": "system.auth.jwt",
-      "type": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties",
-      "sourceMethod": "getJwt()"
-    },
-    {
-      "name": "system.auth.login",
-      "type": "cn.rtt.server.system.config.SystemAuthProperties$LoginConfig",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties",
-      "sourceMethod": "getLogin()"
-    }
-  ],
-  "properties": [
-    {
-      "name": "system.auth.jwt.secret",
-      "type": "java.lang.String",
-      "description": "JWT secret key",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig"
-    },
-    {
-      "name": "system.auth.jwt.private-key",
-      "type": "java.lang.String",
-      "description": "Private key for JWT",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig"
-    },
-    {
-      "name": "system.auth.jwt.public-key",
-      "type": "java.lang.String",
-      "description": "Public key for JWT",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig"
-    },
-    {
-      "name": "system.auth.jwt.header",
-      "type": "java.lang.String",
-      "description": "JWT header name",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
-      "defaultValue": "Authorization"
-    },
-    {
-      "name": "system.auth.jwt.access-token-ttl",
-      "type": "java.time.Duration",
-      "description": "Access token expiration time (e.g., 15s, 30m, 1h)",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
-      "defaultValue": "15s"
-    },
-    {
-      "name": "system.auth.jwt.refresh-token-ttl",
-      "type": "java.time.Duration",
-      "description": "Refresh token expiration time (e.g., 7d, 30d, 1h)",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$JwtConfig",
-      "defaultValue": "7d"
-    },
-    {
-      "name": "system.auth.login.max-retry-count",
-      "type": "java.lang.Integer",
-      "description": "Maximum number of login retry attempts",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$LoginConfig",
-      "defaultValue": 5
-    },
-    {
-      "name": "system.auth.login.lock-time",
-      "type": "java.time.Duration",
-      "description": "Account lock time (e.g., 5m, 10m, 1h)",
-      "sourceType": "cn.rtt.server.system.config.SystemAuthProperties$LoginConfig",
-      "defaultValue": "5m"
-    }
-  ],
-  "hints": []
+	"groups": [{
+			"name": "system.auth",
+			"type": "cn.rtt.server.system.config.property.SystemAuthProperties",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties"
+		},
+		{
+			"name": "system.auth.jwt",
+			"type": "cn.rtt.server.system.config.property.SystemAuthProperties$JwtConfig",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties",
+			"sourceMethod": "getJwt()"
+		},
+		{
+			"name": "system.auth.login",
+			"type": "cn.rtt.server.system.config.property.SystemAuthProperties$LoginConfig",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties",
+			"sourceMethod": "getLogin()"
+		},
+		{
+			"name": "system.cache",
+			"type": "cn.rtt.server.system.config.property.SystemCacheProperties",
+			"sourceType": "cn.rtt.server.system.config.property.SystemCacheProperties",
+			"description": "系统缓存全局配置."
+		},
+		{
+			"name": "system.cache.caffeine",
+			"type": "cn.rtt.server.system.config.property.CaffeineCacheProperties",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties",
+			"description": "Caffeine缓存配置（当system.cache.type=caffeine时生效）."
+		},
+		{
+			"name": "system.cache.caffeine.defaults",
+			"type": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties",
+			"sourceMethod": "getDefaults()",
+			"description": "Caffeine默认缓存配置."
+		},
+		{
+			"name": "system.cache.caffeine.caches",
+			"type": "java.util.Map<java.lang.String, cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig>",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties",
+			"description": "Caffeine具体缓存配置映射."
+		},
+		{
+			"name": "system.cache.redis",
+			"type": "cn.rtt.server.system.config.property.RedisCacheProperties",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties",
+			"description": "Redis缓存配置（当system.cache.type=redis时生效）."
+		},
+		{
+			"name": "system.cache.redis.defaults",
+			"type": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties",
+			"sourceMethod": "getDefaults()",
+			"description": "Redis默认缓存配置."
+		},
+		{
+			"name": "system.cache.redis.caches",
+			"type": "java.util.Map<java.lang.String, cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig>",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties",
+			"description": "Redis具体缓存配置映射."
+		}
+	],
+	"properties": [{
+			"name": "system.auth.jwt.secret",
+			"type": "java.lang.String",
+			"description": "JWT secret key",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$JwtConfig"
+		},
+		{
+			"name": "system.auth.jwt.private-key",
+			"type": "java.lang.String",
+			"description": "Private key for JWT",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$JwtConfig"
+		},
+		{
+			"name": "system.auth.jwt.public-key",
+			"type": "java.lang.String",
+			"description": "Public key for JWT",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$JwtConfig"
+		},
+		{
+			"name": "system.auth.jwt.header",
+			"type": "java.lang.String",
+			"description": "JWT header name",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$JwtConfig",
+			"defaultValue": "Authorization"
+		},
+		{
+			"name": "system.auth.jwt.access-token-ttl",
+			"type": "java.time.Duration",
+			"description": "Access token expiration time (e.g., 15s, 30m, 1h)",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$JwtConfig",
+			"defaultValue": "15s"
+		},
+		{
+			"name": "system.auth.jwt.refresh-token-ttl",
+			"type": "java.time.Duration",
+			"description": "Refresh token expiration time (e.g., 7d, 30d, 1h)",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$JwtConfig",
+			"defaultValue": "7d"
+		},
+		{
+			"name": "system.auth.login.max-retry-count",
+			"type": "java.lang.Integer",
+			"description": "Maximum number of login retry attempts",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$LoginConfig",
+			"defaultValue": 5
+		},
+		{
+			"name": "system.auth.login.lock-time",
+			"type": "java.time.Duration",
+			"description": "Account lock time (e.g., 5m, 10m, 1h)",
+			"sourceType": "cn.rtt.server.system.config.property.SystemAuthProperties$LoginConfig",
+			"defaultValue": "5m"
+		},
+		{
+			"name": "system.cache.type",
+			"type": "cn.rtt.server.system.config.property.SystemCacheProperties$CacheType",
+			"description": "缓存类型：caffeine, redis, none.",
+			"sourceType": "cn.rtt.server.system.config.property.SystemCacheProperties",
+			"defaultValue": "caffeine"
+		},
+		{
+			"name": "system.cache.caffeine.defaults.expire-after-write",
+			"type": "java.time.Duration",
+			"description": "写入后过期时间.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig",
+			"defaultValue": "10m"
+		},
+		{
+			"name": "system.cache.caffeine.defaults.max-size",
+			"type": "java.lang.Long",
+			"description": "缓存最大条目数.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig",
+			"defaultValue": 1000
+		},
+		{
+			"name": "system.cache.caffeine.defaults.record-stats",
+			"type": "java.lang.Boolean",
+			"description": "是否记录缓存统计信息.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig",
+			"defaultValue": false
+		},
+		{
+			"name": "system.cache.caffeine.defaults.initial-capacity",
+			"type": "java.lang.Integer",
+			"description": "缓存初始容量.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig",
+			"defaultValue": 100
+		},
+		{
+			"name": "system.cache.caffeine.caches.[key].expire-after-write",
+			"type": "java.time.Duration",
+			"description": "具体缓存的写入后过期时间（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig"
+		},
+		{
+			"name": "system.cache.caffeine.caches.[key].max-size",
+			"type": "java.lang.Long",
+			"description": "具体缓存的最大条目数（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig"
+		},
+		{
+			"name": "system.cache.caffeine.caches.[key].record-stats",
+			"type": "java.lang.Boolean",
+			"description": "具体缓存是否记录统计信息（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig"
+		},
+		{
+			"name": "system.cache.caffeine.caches.[key].initial-capacity",
+			"type": "java.lang.Integer",
+			"description": "具体缓存的初始容量（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.CaffeineCacheProperties$CacheConfig"
+		},
+		{
+			"name": "system.cache.redis.defaults.time-to-live",
+			"type": "java.time.Duration",
+			"description": "缓存生存时间.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig",
+			"defaultValue": "1h"
+		},
+		{
+			"name": "system.cache.redis.defaults.use-prefix",
+			"type": "java.lang.Boolean",
+			"description": "是否使用键前缀.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig",
+			"defaultValue": true
+		},
+		{
+			"name": "system.cache.redis.defaults.key-prefix",
+			"type": "java.lang.String",
+			"description": "自定义键前缀（为空时使用缓存名作为前缀）.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig",
+			"defaultValue": ""
+		},
+		{
+			"name": "system.cache.redis.defaults.cache-null-values",
+			"type": "java.lang.Boolean",
+			"description": "是否缓存空值.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig",
+			"defaultValue": true
+		},
+		{
+			"name": "system.cache.redis.caches.[key].time-to-live",
+			"type": "java.time.Duration",
+			"description": "具体缓存的生存时间（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig"
+		},
+		{
+			"name": "system.cache.redis.caches.[key].use-prefix",
+			"type": "java.lang.Boolean",
+			"description": "具体缓存是否使用键前缀（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig"
+		},
+		{
+			"name": "system.cache.redis.caches.[key].key-prefix",
+			"type": "java.lang.String",
+			"description": "具体缓存的自定义键前缀（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig"
+		},
+		{
+			"name": "system.cache.redis.caches.[key].cache-null-values",
+			"type": "java.lang.Boolean",
+			"description": "具体缓存是否缓存空值（覆盖默认值）.",
+			"sourceType": "cn.rtt.server.system.config.property.RedisCacheProperties$CacheConfig"
+		}
+	],
+	"hints": [{
+		"name": "system.cache.type",
+		"values": [{
+				"value": "caffeine",
+				"description": "使用Caffeine本地缓存."
+			},
+			{
+				"value": "redis",
+				"description": "使用Redis分布式缓存."
+			},
+			{
+				"value": "none",
+				"description": "不使用缓存."
+			}
+		]
+	}]
 }
