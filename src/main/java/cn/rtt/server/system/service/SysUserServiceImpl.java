@@ -342,25 +342,25 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional(rollbackFor = Exception.class)
     public Boolean updateBaseInfo(UserBaseEdit userBaseEdit, HttpServletResponse response) throws FileUploadException, IOException {
 
-        if (userBaseEdit.getUserId() == null) userBaseEdit.setUserId(SecurityUtils.getUserId());
+//        if (userBaseEdit.getUserId() == null) userBaseEdit.setUserId(SecurityUtils.getUserId());
+//
+//        SysUser byId = userRepository.getById(userBaseEdit.getUserId());
+//        String oldMobile = byId.getMobile();
+//
+//        BeanUtils.copyProperties(userBaseEdit, byId);
+//
+//        if (StringUtils.isBlank(byId.getMobile())) {
+//            throw new BindException("手机不能为空!");
+//        }
+//        if (!Strings.CS.equals(userBaseEdit.getMobile(), oldMobile) && StringUtils.isNotEmpty(oldMobile)) {
+//
+//            String code = (String) cacheService.get(CacheMetaEnum.USER_CHANGE_PHONE_KEY + userBaseEdit.getUuid());
+//            if (!Strings.CS.equals(code, userBaseEdit.getCode())) {
+//                throw new SystemException("验证码错误!");
+//            }
+//        }
 
-        SysUser byId = userRepository.getById(userBaseEdit.getUserId());
-        String oldMobile = byId.getMobile();
-
-        BeanUtils.copyProperties(userBaseEdit, byId);
-
-        if (StringUtils.isBlank(byId.getMobile())) {
-            throw new BindException("手机不能为空!");
-        }
-        if (!Strings.CS.equals(userBaseEdit.getMobile(), oldMobile) && StringUtils.isNotEmpty(oldMobile)) {
-
-            String code = (String) cacheService.get(CacheMetaEnum.USER_CHANGE_PHONE_KEY + userBaseEdit.getUuid());
-            if (!Strings.CS.equals(code, userBaseEdit.getCode())) {
-                throw new SystemException("验证码错误!");
-            }
-        }
-
-        return userRepository.updateById(byId);
+        return false;
     }
 
 

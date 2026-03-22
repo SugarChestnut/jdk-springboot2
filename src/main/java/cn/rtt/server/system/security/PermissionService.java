@@ -34,7 +34,6 @@ public class PermissionService {
         if (loginUser == null || CollectionUtils.isEmpty(loginUser.getPermissions())) {
             return false;
         }
-        PermissionContextHolder.setContext(permission);
         return hasPermissions(loginUser.getPermissions(), permission);
     }
 
@@ -62,7 +61,6 @@ public class PermissionService {
         if (loginUser == null || CollectionUtils.isEmpty(loginUser.getPermissions())) {
             return false;
         }
-        PermissionContextHolder.setContext(permissions);
         Set<String> authorities = loginUser.getPermissions();
         for (String permission : permissions.split(Constants.PERMISSION_DELIMITER)) {
             if (permission != null && hasPermissions(authorities, permission)) {

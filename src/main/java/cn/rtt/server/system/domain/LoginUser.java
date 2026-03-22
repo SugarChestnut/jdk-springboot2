@@ -7,11 +7,13 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * 登录用户身份权限
@@ -41,7 +43,12 @@ public class LoginUser implements UserDetails {
     /**
      * 登录时间
      */
-    private LocalDateTime loginTime;
+    private Instant loginTime;
+
+    /**
+     * access token 过期时间
+     */
+    private Instant expireTime;
 
     /**
      * 登录IP地址
@@ -75,6 +82,8 @@ public class LoginUser implements UserDetails {
     private Boolean admin = false;
 
     private Boolean superAdmin = false;
+
+    private final ReentrantLock lock = new ReentrantLock();
 
     @Override
     @JsonIgnore

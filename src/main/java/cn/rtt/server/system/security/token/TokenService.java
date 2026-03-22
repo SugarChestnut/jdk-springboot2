@@ -5,10 +5,16 @@ import cn.rtt.server.system.utils.IpUtils;
 import cn.rtt.server.system.utils.ServletUtils;
 import eu.bitwalker.useragentutils.UserAgent;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * token验证处理
  */
 public interface TokenService {
+
+    String ACCESS_TOKEN = "access_token";
+
+    String REFRESH_TOKEN = "refresh_token";
 
     LoginUser getLoginUserWithAccessToken(String tokenId);
 
@@ -30,17 +36,7 @@ public interface TokenService {
 
     void invalidateRefreshToken(String tokenId);
 
-    void invalidateUser(String userId);
+    void invalidateUser(Long userId);
 
     void invalidateAll();
-
-    /**
-     * 设置用户代理信息
-     */
-    default void setUserAgent(LoginUser loginUser) {
-        UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
-        loginUser.setIpaddr(IpUtils.getIpAddr());
-        loginUser.setBrowser(userAgent.getBrowser().getName());
-        loginUser.setOs(userAgent.getOperatingSystem().getName());
-    }
 }

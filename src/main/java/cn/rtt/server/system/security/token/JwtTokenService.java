@@ -18,11 +18,12 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
+ * TODO 设备指纹，比如 refresh_token 只能用于获取 access_token
  * @author rtt
  * @date 2026/3/18 10:19
  */
 @Service
-public class JwtService implements TokenService {
+public class JwtTokenService implements TokenService {
 
     @Value("${spring.application.name}")
     private String issuer;
@@ -33,8 +34,8 @@ public class JwtService implements TokenService {
 
     private final SecretKey key;
 
-    public JwtService(SystemAuthProperties authProperties,
-                      CacheService cacheService) {
+    public JwtTokenService(SystemAuthProperties authProperties,
+                           CacheService cacheService) {
         this.authProperties = authProperties;
         this.cacheService = cacheService;
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(authProperties.getJwt().getSecret()));
@@ -42,10 +43,10 @@ public class JwtService implements TokenService {
 
     @Override
     public LoginUser getLoginUserWithAccessToken(String tokenId) {
-
         Object v = cacheService.get(CacheMetaEnum.USER_TOKEN_ACCESS, tokenId);
         return v == null ? null : (LoginUser) v;
     }
+
     @Override
     public LoginUser getLoginUserWithRefreshToken(String tokenId) {
         Object v = cacheService.get(CacheMetaEnum.USER_TOKEN_REFRESH, tokenId);
@@ -69,7 +70,8 @@ public class JwtService implements TokenService {
                 .signWith(key)
                 .compact();
         user.setAccessTokenId(tokenId);
-        cacheService.put(CacheMetaEnum.USER_TOKEN_ACCESS, token, user);
+        user.setExpireTime(now.plus(authProperties.getJwt().getRefreshTokenTtl()));
+        cacheService.put(CacheMetaEnum.USER_TOKEN_ACCESS, tokenId, user);
         return token;
     }
 
@@ -85,7 +87,7 @@ public class JwtService implements TokenService {
                 .signWith(key)
                 .compact();
         user.setRefreshTokenId(tokenId);
-        cacheService.put(CacheMetaEnum.USER_TOKEN_REFRESH, token, user);
+        cacheService.put(CacheMetaEnum.USER_TOKEN_REFRESH, tokenId, user);
         return token;
     }
 
@@ -96,7 +98,6 @@ public class JwtService implements TokenService {
     public TokenPair issueTokenPair(LoginUser user) {
         String accessToken = issueAccessToken(user);
         String refreshToken = issueRefreshToken(user);
-        setUserAgent(user);
         cacheService.put(CacheMetaEnum.USER, user.getUserId(), user);
         return TokenPair.builder()
                 .accessToken(accessToken)
@@ -130,7 +131,7 @@ public class JwtService implements TokenService {
     }
 
     @Override
-    public void invalidateUser(String userId) {
+    public void invalidateUser(Long userId) {
         Object o = cacheService.get(CacheMetaEnum.USER, userId);
         if (o == null) return;
         LoginUser user = (LoginUser) o;

@@ -33,7 +33,7 @@ mybatis-plus:
     configuration:
         map-underscore-to-camel-case: true
         call-setters-on-nulls: true
-        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 logging:
     level:
@@ -44,8 +44,8 @@ system:
         jwt:
             secret: BIrAQfMb1dqS4yCmYJm0ssdw+mn9Ipb3usR6iDnD86eeH5krUTgzxpzFwYd56uxe7vQPEsRUi2V3MYuTpBH45g==
             header: Authorization
-            accessTokenTtl: PT15M
-            refreshTokenTtl: P7D
+            accessTokenTtl: PT30M
+            refreshTokenTtl: P14D
         login:
             maxRetryCount: 5
             lockTime: PT5M

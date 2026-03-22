@@ -1,7 +1,7 @@
 package cn.rtt.server.system.config;
 
 
-import cn.rtt.server.system.security.filter.JwtWebAuthenticationTokenFilter;
+import cn.rtt.server.system.security.filter.JwtAuthenticationFilter;
 import cn.rtt.server.system.security.handler.AuthenticationEntryPointImpl;
 import cn.rtt.server.system.security.handler.LogoutSuccessHandlerImpl;
 import lombok.AllArgsConstructor;
@@ -10,12 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.CorsFilter;
 
 /**
@@ -45,13 +42,9 @@ public class SecurityConfig {
      */
     private final AuthenticationEntryPointImpl unauthorizedHandler;
     /**
-     * 退出处理类
-     */
-    private final LogoutSuccessHandlerImpl logoutSuccessHandler;
-    /**
      * token认证过滤器
      */
-    private final JwtWebAuthenticationTokenFilter authenticationTokenFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     /**
      * 跨域过滤器
      */
@@ -76,10 +69,11 @@ public class SecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
-                // CSRF禁用，因为不使用session
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)  // CSRF禁用
+                .httpBasic(AbstractHttpConfigurer::disable) // 禁用 HTTP basic
+                .formLogin(AbstractHttpConfigurer::disable) // 禁用默认表单登录
+                .logout(AbstractHttpConfigurer::disable)    // 禁用默认的登出
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configure(httpSecurity))
-                .httpBasic(AbstractHttpConfigurer::disable)
                 .headers((headersCustomizer) -> headersCustomizer
                         // 默认会添加以下缓存控制头，强制浏览器不要缓存，关闭这个配置
                         .cacheControl(HeadersConfigurer.CacheControlConfig::disable)
@@ -106,14 +100,10 @@ public class SecurityConfig {
                             ).permitAll()
                             .anyRequest().authenticated();
                 })
-                // 添加Logout filter
-                .logout(logout -> logout.logoutUrl("/**/logout").logoutSuccessHandler(logoutSuccessHandler))
                 // 添加JWT filter，在 SessionCreationPolicy.STATELESS 需要手动将 Authentication 置到上下文，同时用户路径
-                .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 // 前后的分离需要添加 cors
-                .addFilterBefore(corsFilter, JwtWebAuthenticationTokenFilter.class)
-                // 前后的分离需要添加 cors
-                .addFilterBefore(corsFilter, LogoutFilter.class)
+                .addFilterBefore(corsFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 

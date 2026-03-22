@@ -57,12 +57,12 @@ public class SameUrlDataSubmitRepeatInterceptor extends RepeatInterceptor {
         String url = request.getRequestURI();
 
         // 唯一值（没有消息头则使用请求地址）
-        String submitKey = StringUtils.trimToEmpty(request.getHeader(systemConfig.getToken().getHeader()));
+        String submitKey = StringUtils.trimToEmpty(request.getHeader(systemConfig.getJwt().getHeader()));
 
         // 唯一标识（指定key + url + 消息头）
-        String cacheRepeatKey = CacheMetaEnum.REPEAT_SUBMIT_KEY + url + submitKey;
+        String cacheRepeatKey = url + submitKey;
 
-        Object sessionObj = cacheService.get(cacheRepeatKey);
+        Object sessionObj = cacheService.get(CacheMetaEnum.REPEAT_SUBMIT_KEY, cacheRepeatKey);
         if (sessionObj != null) {
             Map<String, Object> sessionMap = (Map<String, Object>) sessionObj;
             if (sessionMap.containsKey(url)) {
@@ -74,7 +74,7 @@ public class SameUrlDataSubmitRepeatInterceptor extends RepeatInterceptor {
         }
         Map<String, Object> cacheMap = new HashMap<>();
         cacheMap.put(url, nowDataMap);
-        cacheService.put(cacheRepeatKey, cacheMap);
+        cacheService.put(CacheMetaEnum.REPEAT_SUBMIT_KEY, cacheRepeatKey, cacheMap);
         return false;
     }
 
