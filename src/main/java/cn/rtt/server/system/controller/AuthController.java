@@ -34,8 +34,8 @@ public class AuthController {
     /**
      * 登录
      */
-    @RequestMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest body) {
+    @PostMapping("/login")
+    public ResponseEntity<Result<String>> login(@RequestBody LoginRequest body) {
         TokenPair tokenPair = authService.login(body);
         ResponseCookie cookie = ResponseCookie.from(TokenService.REFRESH_TOKEN, tokenPair.getRefreshToken())
                 .maxAge(Math.toIntExact(authProperties.getJwt().getRefreshTokenTtl().toSeconds()))
@@ -44,11 +44,11 @@ public class AuthController {
                 .secure(false)
                 .sameSite("Lax")
                 .build();
-        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).body("Login Success");
+        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).body(Result.success("登入成功"));
     }
 
     @RequestMapping("/logout")
-    public ResponseEntity<?> logout() {
+    public ResponseEntity<Result<String>> logout() {
         authService.logout();
         ResponseCookie cookie = ResponseCookie.from(TokenService.REFRESH_TOKEN, "")
                 .maxAge(0)           // 立即过期
@@ -57,7 +57,7 @@ public class AuthController {
                 .secure(false)
                 .sameSite("Lax")
                 .build();
-        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).body("Login Success");
+        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).body(Result.success("登出成功"));
     }
 
     @RequestMapping("/refresh")

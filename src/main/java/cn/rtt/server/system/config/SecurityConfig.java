@@ -3,7 +3,6 @@ package cn.rtt.server.system.config;
 
 import cn.rtt.server.system.security.filter.JwtAuthenticationFilter;
 import cn.rtt.server.system.security.handler.AuthenticationEntryPointImpl;
-import cn.rtt.server.system.security.handler.LogoutSuccessHandlerImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CorsFilter;
 

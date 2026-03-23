@@ -2,7 +2,7 @@ package cn.rtt.server.system.interceptor;
 
 
 import cn.rtt.server.system.constant.Constants;
-import cn.rtt.server.system.utils.HttpHelper;
+import cn.rtt.server.system.utils.ServletUtils;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -29,7 +29,7 @@ public class RepeatableReadRequestWrapper extends HttpServletRequestWrapper {
         request.setCharacterEncoding(Constants.UTF8);
         response.setCharacterEncoding(Constants.UTF8);
 
-        body = HttpHelper.getBodyString(request).getBytes(StandardCharsets.UTF_8);
+        body = ServletUtils.getBodyString(request).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -39,6 +39,7 @@ public class RepeatableReadRequestWrapper extends HttpServletRequestWrapper {
 
     @Override
     public ServletInputStream getInputStream() throws IOException {
+
         final ByteArrayInputStream is = new ByteArrayInputStream(body);
 
         return new ServletInputStream() {

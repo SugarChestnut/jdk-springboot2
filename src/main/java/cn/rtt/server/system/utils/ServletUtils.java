@@ -1,7 +1,9 @@
 package cn.rtt.server.system.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -10,7 +12,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +28,7 @@ import java.util.Map;
  *
  * @author ruoyi
  */
+@Slf4j
 public class ServletUtils {
     /**
      * 获取String参数
@@ -175,5 +181,28 @@ public class ServletUtils {
      */
     public static String urlDecode(String str) {
         return URLDecoder.decode(str, StandardCharsets.UTF_8);
+    }
+
+    public static String getBodyString(ServletRequest request) {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = null;
+        try (InputStream inputStream = request.getInputStream()) {
+            reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (IOException e) {
+            log.error("getBodyString出现问题！");
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    log.error(ExceptionUtils.getMessage(e));
+                }
+            }
+        }
+        return sb.toString();
     }
 }

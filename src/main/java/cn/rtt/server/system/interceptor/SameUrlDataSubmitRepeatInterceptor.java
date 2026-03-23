@@ -5,7 +5,7 @@ import cn.rtt.server.system.annotation.RepeatSubmit;
 import cn.rtt.server.system.cahce.CacheService;
 import cn.rtt.server.system.config.property.SystemAuthProperties;
 import cn.rtt.server.system.constant.CacheMetaEnum;
-import cn.rtt.server.system.utils.HttpHelper;
+import cn.rtt.server.system.utils.ServletUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -39,18 +39,19 @@ public class SameUrlDataSubmitRepeatInterceptor extends RepeatInterceptor {
     @SuppressWarnings("unchecked")
     @Override
     public boolean isRepeat(HttpServletRequest request, RepeatSubmit annotation) throws JsonProcessingException {
-        String nowParams = "";
+
+        String data = "";
         if (request instanceof RepeatableReadRequestWrapper) {
             RepeatableReadRequestWrapper repeatedlyRequest = (RepeatableReadRequestWrapper) request;
-            nowParams = HttpHelper.getBodyString(repeatedlyRequest);
+            data = ServletUtils.getBodyString(repeatedlyRequest);
         }
 
         // body参数为空，获取Parameter的数据
-        if (StringUtils.isEmpty(nowParams)) {
-            nowParams = objectMapper.writeValueAsString(request.getParameterMap());
+        if (StringUtils.isEmpty(data)) {
+            data = objectMapper.writeValueAsString(request.getParameterMap());
         }
         Map<String, Object> nowDataMap = new HashMap<>();
-        nowDataMap.put(REPEAT_PARAMS, nowParams);
+        nowDataMap.put(REPEAT_PARAMS, data);
         nowDataMap.put(REPEAT_TIME, System.currentTimeMillis());
 
         // 请求地址（作为存放cache的key值）

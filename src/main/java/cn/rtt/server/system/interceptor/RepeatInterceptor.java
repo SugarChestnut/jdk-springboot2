@@ -25,7 +25,7 @@ public abstract class RepeatInterceptor implements HandlerInterceptor {
             Method method = handlerMethod.getMethod();
             RepeatSubmit annotation = method.getAnnotation(RepeatSubmit.class);
             if (annotation != null) {
-                return isRepeat(request, annotation);
+                return !isRepeat(request, annotation);
             }
         }
         return true;
