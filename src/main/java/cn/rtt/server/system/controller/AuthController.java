@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static io.jsonwebtoken.Jwts.header;
-
 /**
  * 登录验证
  */
