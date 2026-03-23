@@ -42,6 +42,11 @@ public class AuthService {
      * 登录验证
      */
     public TokenPair login(LoginRequest body) {
+        Authentication a = SecurityUtils.getAuthentication();
+        if (a != null && a.getPrincipal() != null) {
+            LoginUser u = SecurityUtils.getLoginUser();
+            tokenService.invalidateUser(u.getUserId());
+        }
         // 登录前置校验
         loginPreCheck(body);
         // 用户验证

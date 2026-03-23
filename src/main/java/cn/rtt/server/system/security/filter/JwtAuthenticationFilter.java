@@ -51,6 +51,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (token != null) {
                     JwtValidateResult jwtValidateResult = tokenService.validateToken(token);
                     if (jwtValidateResult.isValid()) {
+                        String setCookieHeader = String.format(
+                                "%s=''; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0",
+                                TokenService.REFRESH_TOKEN);
+                        response.setHeader("Set-Cookie", setCookieHeader);
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("text/plain;charset=UTF-8");
                         response.getWriter().write("401 Unauthorized - Invalid token");

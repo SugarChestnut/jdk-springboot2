@@ -10,6 +10,8 @@ import cn.rtt.server.system.security.token.TokenPair;
 import cn.rtt.server.system.security.token.TokenService;
 import cn.rtt.server.system.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static io.jsonwebtoken.Jwts.header;
 
 /**
  * 登录验证
@@ -39,12 +43,14 @@ public class AuthController {
         TokenPair tokenPair = authService.login(body);
         ResponseCookie cookie = ResponseCookie.from(TokenService.REFRESH_TOKEN, tokenPair.getRefreshToken())
                 .maxAge(Math.toIntExact(authProperties.getJwt().getRefreshTokenTtl().toSeconds()))
-                .path("/refresh")
+                .path("/")
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Lax")
                 .build();
-        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).body(Result.success("登入成功"));
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Set-Cookie", cookie.toString());
+        return new ResponseEntity<>(Result.success(tokenPair.getAccessToken()), httpHeaders, HttpStatus.OK);
     }
 
     @RequestMapping("/logout")
@@ -52,12 +58,14 @@ public class AuthController {
         authService.logout();
         ResponseCookie cookie = ResponseCookie.from(TokenService.REFRESH_TOKEN, "")
                 .maxAge(0)           // 立即过期
-                .path("/refresh")
+                .path("/")
                 .httpOnly(true)
                 .secure(false)
                 .sameSite("Lax")
                 .build();
-        return ResponseEntity.ok().header("Set-Cookie", cookie.toString()).body(Result.success("登出成功"));
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Set-Cookie", cookie.toString());
+        return new ResponseEntity<>(Result.success("登出成功"), httpHeaders, HttpStatus.OK);
     }
 
     @RequestMapping("/refresh")
