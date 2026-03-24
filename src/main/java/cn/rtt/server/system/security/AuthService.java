@@ -43,7 +43,7 @@ public class AuthService {
      */
     public TokenPair login(LoginRequest body) {
         Authentication a = SecurityUtils.getAuthentication();
-        if (a != null && a.getPrincipal() != null) {
+        if (a instanceof UsernamePasswordAuthenticationToken) {
             LoginUser u = SecurityUtils.getLoginUser();
             tokenService.invalidateUser(u.getUserId());
         }
