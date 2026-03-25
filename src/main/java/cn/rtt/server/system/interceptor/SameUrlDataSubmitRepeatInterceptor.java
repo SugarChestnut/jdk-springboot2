@@ -4,7 +4,7 @@ package cn.rtt.server.system.interceptor;
 import cn.rtt.server.system.annotation.RepeatSubmit;
 import cn.rtt.server.system.cahce.CacheService;
 import cn.rtt.server.system.config.property.SystemAuthProperties;
-import cn.rtt.server.system.constant.CacheMetaEnum;
+import cn.rtt.server.system.cahce.CacheMetaEnum;
 import cn.rtt.server.system.utils.ServletUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

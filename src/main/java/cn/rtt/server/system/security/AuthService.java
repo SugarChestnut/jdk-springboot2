@@ -82,7 +82,7 @@ public class AuthService {
             if (expireTime.isBefore(Instant.now().plusSeconds(10))) {
                 return tokenService.refreshToken(loginUser);
             } else {
-                return loginUser.getRefreshTokenId();
+                return loginUser.getAccessToken();
             }
         } finally {
             lock.unlock();

@@ -1,4 +1,4 @@
-package cn.rtt.server.system.constant;
+package cn.rtt.server.system.cahce;
 
 import lombok.Getter;
 

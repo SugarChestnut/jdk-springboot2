@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface TokenService {
 
-    String ACCESS_TOKEN = "access_token";
+    String ACCESS_TOKEN = "Access_token";
 
-    String REFRESH_TOKEN = "refresh_token";
+    String REFRESH_TOKEN = "Refresh_token";
 
     LoginUser getLoginUserWithAccessToken(String tokenId);
 

@@ -1,6 +1,5 @@
 package cn.rtt.server.system.cahce;
 
-import cn.rtt.server.system.constant.CacheMetaEnum;
 import com.github.benmanes.caffeine.cache.*;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;

@@ -44,7 +44,7 @@ system:
         jwt:
             secret: BIrAQfMb1dqS4yCmYJm0ssdw+mn9Ipb3usR6iDnD86eeH5krUTgzxpzFwYd56uxe7vQPEsRUi2V3MYuTpBH45g==
             header: Authorization
-            accessTokenTtl: PT30M
+            accessTokenTtl: PT1M
             refreshTokenTtl: P14D
         login:
             maxRetryCount: 5

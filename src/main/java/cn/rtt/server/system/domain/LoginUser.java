@@ -50,6 +50,7 @@ public class LoginUser implements UserDetails {
      */
     private Instant expireTime;
 
+    private String accessToken;
     /**
      * 登录IP地址
      */

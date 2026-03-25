@@ -6,6 +6,7 @@ import cn.rtt.server.system.domain.LoginUser;
 import cn.rtt.server.system.security.token.JwtValidateResult;
 import cn.rtt.server.system.security.token.TokenService;
 import cn.rtt.server.system.utils.SecurityUtils;
+import cn.rtt.server.system.utils.ServletUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Console;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -39,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
+        System.out.println(request.getRequestURI());
         LoginUser loginUser = null;
         String token = request.getHeader(authProperties.getJwt().getHeader());
         if (token == null) {
@@ -50,15 +53,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (optional.isPresent()) token = optional.get().getValue();
                 if (token != null) {
                     JwtValidateResult jwtValidateResult = tokenService.validateToken(token);
-                    if (jwtValidateResult.isValid()) {
-                        String setCookieHeader = String.format(
+                    if (!jwtValidateResult.isValid()) {
+                        String cookie = String.format(
                                 "%s=''; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0",
                                 TokenService.REFRESH_TOKEN);
-                        response.setHeader("Set-Cookie", setCookieHeader);
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        response.setContentType("text/plain;charset=UTF-8");
-                        response.getWriter().write("401 Unauthorized - Invalid token");
-                        response.flushBuffer();
+                        ServletUtils.render401(response, cookie);
                         return;
                     }
                     loginUser = tokenService.getLoginUserWithRefreshToken(jwtValidateResult.getTokenId());
@@ -67,10 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             JwtValidateResult jwtValidateResult = tokenService.validateToken(token);
             if (!jwtValidateResult.isValid()) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("text/plain;charset=UTF-8");
-                response.getWriter().write("401 Unauthorized - Invalid token");
-                response.flushBuffer();
+                ServletUtils.render401(response, null);
                 return;
             }
             loginUser = tokenService.getLoginUserWithAccessToken(jwtValidateResult.getTokenId());

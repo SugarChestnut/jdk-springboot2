@@ -1,7 +1,7 @@
 package cn.rtt.server.system;
 
 import cn.rtt.server.system.cahce.CacheService;
-import cn.rtt.server.system.constant.CacheMetaEnum;
+import cn.rtt.server.system.cahce.CacheMetaEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

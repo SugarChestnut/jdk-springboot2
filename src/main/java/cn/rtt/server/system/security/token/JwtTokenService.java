@@ -2,7 +2,7 @@ package cn.rtt.server.system.security.token;
 
 import cn.rtt.server.system.cahce.CacheService;
 import cn.rtt.server.system.config.property.SystemAuthProperties;
-import cn.rtt.server.system.constant.CacheMetaEnum;
+import cn.rtt.server.system.cahce.CacheMetaEnum;
 import cn.rtt.server.system.domain.LoginUser;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -70,7 +70,8 @@ public class JwtTokenService implements TokenService {
                 .signWith(key)
                 .compact();
         user.setAccessTokenId(tokenId);
-        user.setExpireTime(now.plus(authProperties.getJwt().getRefreshTokenTtl()));
+        user.setAccessToken(token);
+        user.setExpireTime(now.plus(authProperties.getJwt().getAccessTokenTtl()));
         cacheService.put(CacheMetaEnum.USER_TOKEN_ACCESS, tokenId, user);
         return token;
     }

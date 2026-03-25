@@ -1,8 +1,5 @@
 package cn.rtt.server.system.security.handler;
 
-
-import cn.rtt.server.system.constant.ResultCode;
-import cn.rtt.server.system.domain.response.Result;
 import cn.rtt.server.system.utils.ServletUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -31,7 +28,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint, S
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
             throws IOException {
-        ServletUtils.renderString(response, objectMapper.writeValueAsString(
-                Result.error(ResultCode.TOKEN_INVALID_OR_EXPIRED)));
+        ServletUtils.render401(response, null);
     }
 }

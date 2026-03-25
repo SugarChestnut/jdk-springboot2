@@ -140,6 +140,15 @@ public class ServletUtils {
         }
     }
 
+    public static void render401(HttpServletResponse response, String cookie) throws IOException {
+        if (StringUtils.isNotBlank(cookie)) response.setHeader("Set-Cookie", cookie);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("text/plain;charset=UTF-8");
+        response.getWriter().write("401 Unauthorized - Invalid token");
+        response.flushBuffer();
+
+    }
+
     /**
      * 是否是Ajax异步请求
      */
