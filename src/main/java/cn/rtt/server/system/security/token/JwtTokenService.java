@@ -73,6 +73,7 @@ public class JwtTokenService implements TokenService {
         user.setAccessToken(token);
         user.setExpireTime(now.plus(authProperties.getJwt().getAccessTokenTtl()));
         cacheService.put(CacheMetaEnum.USER_TOKEN_ACCESS, tokenId, user);
+        System.out.println(token);
         return token;
     }
 

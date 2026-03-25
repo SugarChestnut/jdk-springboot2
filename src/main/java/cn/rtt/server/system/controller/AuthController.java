@@ -67,8 +67,8 @@ public class AuthController {
     }
 
     @RequestMapping("/refresh")
-    public ResponseEntity<String> refresh() {
-        return ResponseEntity.ok(authService.refresh());
+    public ResponseEntity<Result<String>> refresh() {
+        return ResponseEntity.ok(Result.success(authService.refresh()));
     }
 
     /**
